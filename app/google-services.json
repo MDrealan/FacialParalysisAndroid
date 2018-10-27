@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "446398160718",
+    "firebase_url": "https://facialparalysis-ab2b4.firebaseio.com",
+    "project_id": "facialparalysis-ab2b4",
+    "storage_bucket": "facialparalysis-ab2b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446398160718:android:615301ebd92d0cbf",
+        "android_client_info": {
+          "package_name": "com.uiowa_facial_paralysis.facialparalysisapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "446398160718-2c42mtcs6b6g6antohg8kp23mm0lemtv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATvB17mnHY1JACH5MB_eaBor3yPWpYyzg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
