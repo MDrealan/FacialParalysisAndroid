@@ -19,19 +19,8 @@ import java.util.ArrayList;
 
 public class NewFormActivity extends AppCompatActivity {
 
-    private ArrayList testQuestions;
-    private ArrayList testAnswer1;
-    private ArrayList testAnswer2;
-
-    private int currentQuestion = 0;
-
-    private RadioButton q_1;
-    private RadioButton q_2;
-    private RadioButton q_3;
-    private RadioButton q_4;
 
     ArrayList<TextView> questionRadios= new ArrayList<>();
-
     private ArrayList<String> userAnswers = new ArrayList<>();
 
 
@@ -39,50 +28,29 @@ public class NewFormActivity extends AppCompatActivity {
     private ArrayList<String> databaseQuestions;
     private ArrayList<ArrayList<String>> databaseAnswers; //nested because each question has multiple answers. index 0 of Arraylist<Arraylist<String>> contains the answers for question 1.
 
+    private TextView question;
+
+    private int currentQuestion; //what question we're on.
+    private RadioGroup answer_group;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_form);
 
-        //Todo:: database input: these will be replaced with integers for the current question/answer for the questionaiire in the database.
-        testQuestions = new ArrayList();
-        testQuestions.add("Question 1");
-        testQuestions.add("Question 2");
-        testAnswer1 = new ArrayList();
-        testAnswer1.add("Answer 1");
-        testAnswer1.add("Answer 2");
-        testAnswer1.add("Answer 3");
-        testAnswer1.add("Answer 4");
-        testAnswer2 = new ArrayList();
-        testAnswer2.add("Answer 5");
-        testAnswer2.add("Answer 6");
-        testAnswer2.add("Answer 7");
-        testAnswer2.add("Answer 8");
-
+        //Questionview, radiogroup for answers. currentQuestion is the current question, duh.
+        question = (TextView)findViewById(R.id.question_view);
+        currentQuestion = 0;
+        answer_group = (RadioGroup)findViewById(R.id.answer_group);
 
         databaseQuestions = new ArrayList<String>();
         databaseAnswers = new ArrayList<ArrayList<String>>();
+
         database = FirebaseDatabase.getInstance();
-        getDatabaseInfo();
+        getDatabaseInfo(); //ALSO CALLS METHOD TO INITIALIZE FIRST QUESTION AND ANSWER!
 
-        q_1 = (RadioButton)findViewById(R.id.q_1);
-        q_2 = (RadioButton)findViewById(R.id.q_2);
-        q_3 = (RadioButton)findViewById(R.id.q_3);
-        q_4 = (RadioButton)findViewById(R.id.q_4);
 
-        questionRadios.add(q_1);
-        questionRadios.add(q_2);
-        questionRadios.add(q_3);
-        questionRadios.add(q_4);
-
-        setRadioButtonsText(testAnswer1); //HARDCODED
-
-        final TextView question = (TextView)findViewById(R.id.question_text);
-        question.setText(testQuestions.get(currentQuestion).toString());
-        currentQuestion = currentQuestion+1;
-
-        final RadioGroup answer_group = (RadioGroup)findViewById(R.id.answer_group);
 
         //Set the initial text to the first questions.
 
@@ -93,16 +61,19 @@ public class NewFormActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                //if no option selected
-
-
-
-                //if go to next question
-                if(currentQuestion != testQuestions.size())
+                if(currentQuestion == 0)
                 {
-                    question.setText(testQuestions.get(currentQuestion).toString());
-                    currentQuestion++;
+                    setQandA();
+                }
 
+                //if no option selected
+                if( answer_group.getCheckedRadioButtonId() == -1)
+                {
+                    //dont do anything.
+                }
+                //if go to next question
+                else
+                {
                     //Get text from radio group selected button.
                     int selectedID = answer_group.getCheckedRadioButtonId();
                     View radioButton = answer_group.findViewById(selectedID);
@@ -111,26 +82,15 @@ public class NewFormActivity extends AppCompatActivity {
 
                     userAnswers.add(answer.getText().toString());
 
-                    setRadioButtonsText(testAnswer2); //HARDCODED: database needs to be generalized.
-
-                }
-                else
+                    //Todo:: reroute back to homepage if done with questions
+                    if(currentQuestion != databaseQuestions.size())
                     {
-                    //if last question, go to next page.
+                        setQandA();
+                    }
                 }
             }
         });
     }
-
-    private void setRadioButtonsText(ArrayList answers)
-    {
-        for(int i = 0; i < answers.size(); i++)
-        {
-            TextView currTextView = questionRadios.get(i);
-            currTextView.setText(answers.get(i).toString());
-        }
-    }
-
     //Todo:: Modify database so that we have multiple questionairre forms (currently formdata path is just one questionaiire. woopsies :)
     private void getDatabaseInfo()
     {
@@ -155,9 +115,7 @@ public class NewFormActivity extends AppCompatActivity {
                     {
                         databaseQuestions.add(dataSnapshot.child(Long.toString(i)).getValue().toString());//ow, thatsalottafunctioncalls.
                     }
-
-                    String questionArray = dataSnapshot.getValue().toString();
-                }
+                    }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -194,4 +152,22 @@ public class NewFormActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void setQandA()
+    {
+        question.setText(databaseQuestions.get(currentQuestion));         //Set the question.
+
+        answer_group.removeAllViews(); //remove all previous radiobuttons.
+        //Create new radio button for each answer.
+        for(int i = 0; i < databaseAnswers.get(currentQuestion).size(); i++)
+        {
+            RadioButton radio = new RadioButton(this); //why this?
+            radio.setText(databaseAnswers.get(currentQuestion).get(i)); //set the answer.
+            answer_group.addView(radio);
+        }
+
+        currentQuestion++; //make sure you go to the next question~!
+    }
+
 }
