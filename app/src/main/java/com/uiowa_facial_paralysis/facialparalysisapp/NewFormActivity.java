@@ -1,5 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class NewFormActivity extends AppCompatActivity {
 
@@ -33,11 +35,18 @@ public class NewFormActivity extends AppCompatActivity {
     private int currentQuestion; //what question we're on.
     private RadioGroup answer_group;
 
+    private String formStartDate;
+
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_form);
+
+        username = getIntent().getStringExtra("USERNAME");
+        Calendar temp =Calendar.getInstance();
+        formStartDate = temp.getTime().toString();
 
         //Questionview, radiogroup for answers. currentQuestion is the current question, duh.
         question = (TextView)findViewById(R.id.question_view);
@@ -71,7 +80,6 @@ public class NewFormActivity extends AppCompatActivity {
                 {
                     //dont do anything.
                 }
-                //if go to next question
                 else
                 {
                     //Get text from radio group selected button.
@@ -82,10 +90,14 @@ public class NewFormActivity extends AppCompatActivity {
 
                     userAnswers.add(answer.getText().toString());
 
-                    //Todo:: reroute back to homepage if done with questions
                     if(currentQuestion != databaseQuestions.size())
                     {
                         setQandA();
+                    }
+                    else
+                    {
+                        sendFinalForm();
+                        returnToHome();
                     }
                 }
             }
@@ -97,6 +109,8 @@ public class NewFormActivity extends AppCompatActivity {
         String questionPath = "formdata/";
         DatabaseReference basePath = database.getReference(questionPath);
 
+
+        //Todo:: do these need to be static so that they can run before the constructor runs? That way we won't get threading issues.
         getDatabaseQuestions(basePath);
         // !!!! ANSWER call always goes AFTER question call, as its size is dependant on the amount of QUESTIONS.
         getDatabaseAnswers(basePath);
@@ -153,11 +167,26 @@ public class NewFormActivity extends AppCompatActivity {
         });
     }
 
+    //Todo:: only send final form if images are done (to be done later).
+    //Todo:: package the array for the DB in a nice format please.
+    private void sendFinalForm()
+    {
+        DatabaseReference ref = database.getReference();
+
+        String answers = userAnswers.toString();
+        ref.child("forms").child("finalized").child(username).child(formStartDate).child("answers").setValue(answers);
+        ref.child("forms").child("finalized").child(username).child(formStartDate).child("q_type").setValue("FACE");
+        //Todo:: images!!!!!!!!
+        ref.child("forms").child("finalized").child(username).child(formStartDate).child("image_references").setValue("not implemented!");
+        //Todo:: if face questionairre, then also give the face score.
+        ref.child("forms").child("finalized").child(username).child(formStartDate).child("face_score").setValue("not implemented!");
+    }
 
     private void setQandA()
     {
         question.setText(databaseQuestions.get(currentQuestion));         //Set the question.
 
+        answer_group.clearCheck(); //get rid of checked one from before
         answer_group.removeAllViews(); //remove all previous radiobuttons.
         //Create new radio button for each answer.
         for(int i = 0; i < databaseAnswers.get(currentQuestion).size(); i++)
@@ -168,6 +197,14 @@ public class NewFormActivity extends AppCompatActivity {
         }
 
         currentQuestion++; //make sure you go to the next question~!
+    }
+
+    //Todo::  modified to go back to the choose page if not everything has been completed for the form
+    private void returnToHome()
+    {
+        Intent intent = new Intent(this, HomePage.class); //go to Next activity
+        intent.putExtra("USERNAME", username);
+        startActivity(intent);
     }
 
 }

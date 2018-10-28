@@ -82,39 +82,6 @@ public class SignUp extends AppCompatActivity {
 
         ref.child("users").child(username).child("username").setValue(username);
         ref.child("users").child(username).child("password").setValue(encryptedPassword);
-
-
-        /*
-        ref.child("users").push().setValue()
-
-        id_attempt.child("password").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                if(dataSnapshot.exists()) //if there's a password present.
-                {
-                    String actual_password = dataSnapshot.getValue().toString();
-                    String decrypted_actual = AESCrypt.decrypt(actual_password);
-
-                    if (decrypted_actual.equals(user_password))
-                    {
-                        goToHomePage();
-                    } else {
-                        incorrect_input.setText("Invalid Input");
-                    }
-                }
-                else
-                {
-                    incorrect_input.setText("Invalid Input");
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-*/
     }
 
     public void goToHomePage()
