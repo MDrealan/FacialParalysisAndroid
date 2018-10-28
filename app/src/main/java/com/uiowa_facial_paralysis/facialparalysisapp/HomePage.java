@@ -41,7 +41,7 @@ public class HomePage extends AppCompatActivity {
 
     private void startNewForm()
     {
-        //verify here
+        //verify here (call a method).
 
         Intent intent = new Intent(this, NewFormActivity.class); //go to Next activity
         intent.putExtra("USERNAME", username);
