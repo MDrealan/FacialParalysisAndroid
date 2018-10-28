@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity
 {
 
 private FirebaseDatabase database;
+private String username = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -26,18 +27,15 @@ private FirebaseDatabase database;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Firebase instance.
         database = FirebaseDatabase.getInstance();
 
-
         //Todo:: find out why these need to be final (accessed from an inner class? I can't remember why this needs to be the case).
-        //Email Input
         final EditText email = (EditText)findViewById(R.id.email_input);
-        //Password Input
         final EditText password = (EditText)findViewById(R.id.password_input);
-
         final TextView incorrectInput = (TextView)findViewById(R.id.incorrect_inputs);
 
-        //Click Listener to go to next page.
+        //Click Listener -> GO TO NEXT PAGE
         Button login_button = (Button)findViewById(R.id.login_button);
         login_button.setOnClickListener(new View.OnClickListener()
         {
@@ -52,7 +50,7 @@ private FirebaseDatabase database;
             }
         });
 
-        //Click Listener to sign up.
+        //Click Listener -> GO TO SIGN UP.
         Button sign_up_button = (Button)findViewById(R.id.sign_up);
         sign_up_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,11 +62,12 @@ private FirebaseDatabase database;
 
 
     }
-    //Todo:: pass user info to the next page so we know where to put stuff in the database for the forms.
+
     //Code to go to the Users Homepage
     private void goToHomePage()
     {
         Intent intent = new Intent(this, HomePage.class); //go to Next activity
+        intent.putExtra("USERNAME", username); //pass username to next activity.
         startActivity(intent);
     }
 
@@ -88,9 +87,10 @@ private FirebaseDatabase database;
     private void verifyPassword(String email, String password_guess, final TextView incorrect_input)
     {
         final String user_password = password_guess;
+        final String userEmail = email;
 
         //Todo: Verification of email/password in case of bad/malicious input
-        StringBuilder userIDInput = new StringBuilder("users" + "/" + email + "/");
+        StringBuilder userIDInput = new StringBuilder("users" + "/" + userEmail + "/");
         DatabaseReference id_attempt = database.getReference(userIDInput.toString());
 
         id_attempt.child("password").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -104,6 +104,7 @@ private FirebaseDatabase database;
 
                     if (decrypted_actual.equals(user_password))
                     {
+                        username = userEmail;
                         goToHomePage();
                     } else {
                         incorrect_input.setText("Invalid Input");
@@ -114,6 +115,8 @@ private FirebaseDatabase database;
                     incorrect_input.setText("Invalid Input");
                 }
             }
+            //Todo:: what do we do here? probably need to notify the user the database isn't available, though this is unlikely.
+            //Todo:: we also need to Test what happens when the database fails to return things.
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -123,7 +126,7 @@ private FirebaseDatabase database;
 
     private void goToSignUp()
     {
-        Intent intent = new Intent(this, sign_up.class); //go to Next activity
+        Intent intent = new Intent(this, SignUp.class); //go to Next activity
         startActivity(intent);
     }
 }

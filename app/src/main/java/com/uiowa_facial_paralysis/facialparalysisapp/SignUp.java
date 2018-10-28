@@ -15,9 +15,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class sign_up extends AppCompatActivity {
+public class SignUp extends AppCompatActivity {
 
     private FirebaseDatabase database;
+
+
+    //Todo:: don't allow for ridiculously long usernames, and try to suggest decent passwords.
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

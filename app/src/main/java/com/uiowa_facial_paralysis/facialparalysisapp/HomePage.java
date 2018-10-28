@@ -5,8 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class HomePage extends AppCompatActivity {
+
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -16,6 +19,10 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
+        username = getIntent().getStringExtra("USERNAME");
+        String welcome = "Welcome, " + username;
+        TextView user_welcome = (TextView)findViewById(R.id.hello_user_view);
+        user_welcome.setText(welcome);
         //PATHING & LOGIC
 
         //NEW FORM
@@ -37,6 +44,7 @@ public class HomePage extends AppCompatActivity {
         //verify here
 
         Intent intent = new Intent(this, NewFormActivity.class); //go to Next activity
+        intent.putExtra("USERNAME", username);
         startActivity(intent);
     }
 
