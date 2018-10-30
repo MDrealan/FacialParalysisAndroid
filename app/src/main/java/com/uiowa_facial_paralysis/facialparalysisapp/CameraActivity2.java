@@ -36,7 +36,9 @@ public class CameraActivity2 extends AppCompatActivity {
         mPreview = new CameraPreview(this, mCamera);
         /*FrameLayout preview = (FrameLayout) findViewById(R.id.activity_camera2);*/
         /*preview.addView(mPreview);*/
-
+        mCamera.open();
+        //mCamera.setPreviewDisplay();
+        mCamera.startPreview();
         // Add a listener to the Capture button
         Button captureButton = (Button) findViewById(R.id.button_capture);
         captureButton.setOnClickListener(new View.OnClickListener()
@@ -96,14 +98,14 @@ public class CameraActivity2 extends AppCompatActivity {
             // using Environment.getExternalStorageState() before doing this.
 
             File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), "MyCameraApp");
+                    Environment.DIRECTORY_PICTURES), "FacialParalysisApp");
             // This location works best if you want the created images to be shared
             // between applications and persist after your app has been uninstalled.
 
             // Create the storage directory if it does not exist
             if (! mediaStorageDir.exists()){
                 if (! mediaStorageDir.mkdirs()){
-                    Log.d("MyCameraApp", "failed to create directory");
+                    Log.d("FacialParalysisApp", "failed to create directory");
                     return null;
                 }
             }
