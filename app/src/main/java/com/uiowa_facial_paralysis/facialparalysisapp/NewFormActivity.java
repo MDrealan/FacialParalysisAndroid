@@ -1,10 +1,13 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -109,7 +112,7 @@ public class NewFormActivity extends AppCompatActivity {
     //Todo:: Modify database so that we have multiple questionairre forms (currently formdata path is just one questionaiire. woopsies :)
     private void getDatabaseInfo()
     {
-        String questionPath = "formdata/";
+        String questionPath = "formdata/synkinesis/";
         DatabaseReference basePath = database.getReference(questionPath);
 
 
@@ -122,7 +125,7 @@ public class NewFormActivity extends AppCompatActivity {
 
     private void getDatabaseQuestions(DatabaseReference basePath)
     {
-        basePath.child("questions1").addListenerForSingleValueEvent(new ValueEventListener() {
+        basePath.child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
@@ -130,7 +133,8 @@ public class NewFormActivity extends AppCompatActivity {
                 {
                     for(long i = 0; i < dataSnapshot.getChildrenCount(); i++)
                     {
-                        databaseQuestions.add(dataSnapshot.child(Long.toString(i)).getValue().toString());//ow, thatsalottafunctioncalls.
+                        String currQuestion = "q" + Long.toString(i + 1);
+                        databaseQuestions.add(dataSnapshot.child(currQuestion).getValue().toString());
                     }
                     }
             }
@@ -142,7 +146,7 @@ public class NewFormActivity extends AppCompatActivity {
 
     private void getDatabaseAnswers(DatabaseReference basePath)
     {
-        basePath.child("answers1").addListenerForSingleValueEvent(new ValueEventListener() {
+        basePath.child("answers").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
@@ -187,15 +191,43 @@ public class NewFormActivity extends AppCompatActivity {
 
     private void setQandA()
     {
+        int color1 = getResources().getColor(R.color.colorPrimaryDark);
+        int color2 = getResources().getColor(R.color.colorPrimary);
+
         question.setText(databaseQuestions.get(currentQuestion));         //Set the question.
+
 
         answer_group.clearCheck(); //get rid of checked one from before
         answer_group.removeAllViews(); //remove all previous radiobuttons.
         //Create new radio button for each answer.
+
+        ViewGroup.LayoutParams layout = answer_group.getLayoutParams();
+        int groupheight = layout.height;
+        int groupwidth = layout.width;
+
         for(int i = 0; i < databaseAnswers.get(currentQuestion).size(); i++)
         {
+            int weightParam = databaseAnswers.get(currentQuestion).size(); //for setting how large each radiobutton should be.
+
             RadioButton radio = new RadioButton(this); //why this?
             radio.setText(databaseAnswers.get(currentQuestion).get(i)); //set the answer.
+
+           // radio.setWidth((int) (groupwidth));
+            radio.setHeight((int) (groupheight/weightParam));
+
+            //stripey!
+            /*
+            if ( (i % 2) == 0) {
+                radio.setBackgroundColor(color1);
+                radio.setTextColor(color2);
+            }
+            else
+            {
+                radio.setBackgroundColor(color2);
+                radio.setTextColor(color1);
+            }
+
+            */
             answer_group.addView(radio);
         }
 
