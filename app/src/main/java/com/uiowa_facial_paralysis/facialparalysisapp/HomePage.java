@@ -43,7 +43,7 @@ public class HomePage extends AppCompatActivity {
     {
         //verify here (call a method).
 
-        Intent intent = new Intent(this, NewFormActivity.class); //go to Next activity
+        Intent intent = new Intent(this, SelectPage.class); //go to Next activity
         intent.putExtra("USERNAME", username);
         startActivity(intent);
     }

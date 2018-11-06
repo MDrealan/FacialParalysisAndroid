@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uiowa_facial_paralysis.facialparalysisapp">
+
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
 
     <application
@@ -22,7 +24,8 @@
         </activity>
         <activity android:name=".HomePage" />
         <activity android:name=".NewFormActivity" />
-        <activity android:name=".SignUp"></activity>
+        <activity android:name=".SignUp" />
+        <activity android:name=".SelectPage"></activity>
     </application>
 
 </manifest>

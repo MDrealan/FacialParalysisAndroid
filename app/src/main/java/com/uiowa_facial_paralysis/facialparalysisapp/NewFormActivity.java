@@ -64,7 +64,8 @@ public class NewFormActivity extends AppCompatActivity {
         //Set the initial text to the first questions.
 
         //Button Listener to go to the next question.
-        Button nextQuestion = (Button)findViewById(R.id.next_question_button);
+        final Button nextQuestion = (Button)findViewById(R.id.next_question_button);
+        nextQuestion.setText("Start Form"); //at the beginning, for now have this be it. Todo:: Get Rid of this once active call is done.
         nextQuestion.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -73,6 +74,7 @@ public class NewFormActivity extends AppCompatActivity {
                 if(currentQuestion == 0)
                 {
                     setQandA();
+                    nextQuestion.setText("Next Question");
                 }
 
                 //if no option selected
@@ -97,7 +99,8 @@ public class NewFormActivity extends AppCompatActivity {
                     else
                     {
                         sendFinalForm();
-                        returnToHome();
+                        // Todo:: If photo portion is done, return to home, else, return to select page.
+                        returnToSelectPage();
                     }
                 }
             }
@@ -204,6 +207,14 @@ public class NewFormActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, HomePage.class); //go to Next activity
         intent.putExtra("USERNAME", username);
+        startActivity(intent);
+    }
+    private void returnToSelectPage()
+    {
+        Intent intent = new Intent(this, SelectPage.class);
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("QUESTIONDONE", true); //Todo:: if not done (saved and exited), return false.
+        intent.putExtra("ACTIVITYINITIALIZER", "NewFormActivity"); //to tell
         startActivity(intent);
     }
 

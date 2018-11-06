@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SelectPage">
+
+    <Button
+        android:id="@+id/photo_start_button"
+        android:layout_width="200sp"
+        android:layout_height="200sp"
+        android:layout_marginStart="92dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="92dp"
+        android:layout_marginBottom="68dp"
+        android:background="@color/colorPrimary"
+        android:text="Start Photos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/question_start_button" />
+
+    <Button
+        android:id="@+id/question_start_button"
+        android:layout_width="200sp"
+        android:layout_height="200sp"
+        android:layout_marginStart="147dp"
+        android:layout_marginTop="106dp"
+        android:layout_marginEnd="149dp"
+        android:layout_marginBottom="413dp"
+        android:background="@color/colorPrimary"
+        android:text="Start Questions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.282" />
+</android.support.constraint.ConstraintLayout>
