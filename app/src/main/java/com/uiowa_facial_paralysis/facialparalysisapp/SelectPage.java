@@ -48,6 +48,14 @@ public class SelectPage extends AppCompatActivity {
 
         }
 
+        final Button exit = (Button) findViewById(R.id.save_exit_button);
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goHome();
+            }
+        });
+
     }
 
 
@@ -56,6 +64,13 @@ public class SelectPage extends AppCompatActivity {
         //verify here (call a method).
 
         Intent intent = new Intent(this, NewFormActivity.class); //go to Next activity
+        intent.putExtra("USERNAME", username);
+        startActivity(intent);
+    }
+
+    private void goHome()
+    {
+        Intent intent = new Intent(this, HomePage.class); //go to Next activity
         intent.putExtra("USERNAME", username);
         startActivity(intent);
     }
