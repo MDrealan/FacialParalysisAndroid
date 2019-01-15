@@ -34,22 +34,8 @@ public class CameraActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        Button new_photo1 = (Button)findViewById(R.id.front_button);
-        Button new_photo2 = (Button)findViewById(R.id.left_button);
-        Button new_photo3 = (Button)findViewById(R.id.right_button);
-        new_photo1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startNewPhoto();
-            }
-        });
-        new_photo2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startNewPhoto();
-            }
-        });
-        new_photo3.setOnClickListener(new View.OnClickListener() {
+        Button new_photo = (Button)findViewById(R.id.photo_start_button);
+        new_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startNewPhoto();
