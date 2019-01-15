@@ -3,8 +3,8 @@
     package="com.uiowa_facial_paralysis.facialparalysisapp">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.permission.WRITE_INTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
