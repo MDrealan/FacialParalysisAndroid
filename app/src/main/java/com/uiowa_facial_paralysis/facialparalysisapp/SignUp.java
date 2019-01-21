@@ -82,6 +82,7 @@ public class SignUp extends AppCompatActivity {
 
         ref.child("users").child(username).child("username").setValue(username);
         ref.child("users").child(username).child("password").setValue(encryptedPassword);
+        ref.child("users").child(username).child("formID").setValue("0"); //new users have zero forms
     }
 
     public void goToHomePage()

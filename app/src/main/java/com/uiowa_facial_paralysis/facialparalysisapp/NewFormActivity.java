@@ -28,6 +28,7 @@ public class NewFormActivity extends AppCompatActivity {
     ArrayList<TextView> questionRadios= new ArrayList<>();
     private ArrayList<String> userAnswers = new ArrayList<>();
 
+    private int formID; //ID of the form.
 
     private FirebaseDatabase database;
     private ArrayList<String> databaseQuestions;
@@ -49,7 +50,8 @@ public class NewFormActivity extends AppCompatActivity {
 
         username = getIntent().getStringExtra("USERNAME");
         Calendar temp =Calendar.getInstance();
-        formStartDate = temp.getTime().toString();
+
+        formID = Integer.parseInt(getIntent().getStringExtra("FORMID")); //current form ID
 
         //Questionview, radiogroup for answers. currentQuestion is the current question, duh.
         question = (TextView)findViewById(R.id.question_view);
@@ -181,12 +183,14 @@ public class NewFormActivity extends AppCompatActivity {
         DatabaseReference ref = database.getReference();
 
         String answers = userAnswers.toString();
-        ref.child("forms").child("finalized").child(username).child(formStartDate).child("answers").setValue(answers);
-        ref.child("forms").child("finalized").child(username).child(formStartDate).child("q_type").setValue("FACE");
-        //Todo:: images!!!!!!!!
-        ref.child("forms").child("finalized").child(username).child(formStartDate).child("image_references").setValue("not implemented!");
-        //Todo:: if face questionairre, then also give the face score.
-        ref.child("forms").child("finalized").child(username).child(formStartDate).child("face_score").setValue("not implemented!");
+
+        //need formID from selectPage. Let selectPage do the deciding on whether a form is done (to move it to finalized).
+
+
+        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("answers").setValue(answers);
+        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("q_type").setValue("FACE");
+        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("image_references").setValue("not implemented!");
+        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("face_score").setValue("not implemented!");
     }
 
     private void setQandA()
