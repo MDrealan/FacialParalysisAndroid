@@ -19,6 +19,7 @@ public class SelectPage extends AppCompatActivity {
         username = getIntent().getStringExtra("USERNAME");
 
         boolean questionDone = getIntent().getBooleanExtra("QUESTIONDONE", false);
+        boolean photoDone = getIntent().getBooleanExtra("PHOTODONE", false);
         String initializedBy = "HomePage";
         //Todo:: send information to NewFormActivity indicating if the photos are done or not, so it can decide if it needs to submit the form or not..
 
@@ -48,14 +49,47 @@ public class SelectPage extends AppCompatActivity {
 
         }
 
-        final Button exit = (Button) findViewById(R.id.save_exit_button);
-        exit.setOnClickListener(new View.OnClickListener() {
+        final Button startPhoto = (Button) findViewById(R.id.photo_start_button);
+        if(photoDone) //default is false
+        {
+            startPhoto.setAlpha(.5f);
+            startPhoto.setClickable(false);
+        }
+        else
+        {
+            startPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startPhotos();
+                }
+            });
+        }
+
+        final Button saveAndExit = (Button) findViewById(R.id.save_exit_button);
+        saveAndExit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
+                saveCurrentState();
                 goHome();
             }
         });
 
+    }
+
+    private void saveCurrentState()
+    {
+        //What I need:
+            // form ID
+
+
+    }
+
+    private void startPhotos()
+    {
+        Intent intent = new Intent(this, CameraActivity.class);
+        intent.putExtra("USERNAME", username);
+        startActivity(intent);
     }
 
 
