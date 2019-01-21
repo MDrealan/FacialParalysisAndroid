@@ -34,11 +34,32 @@ public class CameraActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        Button new_photo = (Button)findViewById(R.id.left_button);
-        new_photo.setOnClickListener(new View.OnClickListener() {
+        Button new_Fphoto = (Button)findViewById(R.id.front_button);
+        new_Fphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startNewPhoto();
+            }
+        });
+        Button new_Lphoto = (Button)findViewById(R.id.left_button);
+        new_Lphoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewPhoto();
+            }
+        });
+        Button new_Rphoto = (Button)findViewById(R.id.right_button);
+        new_Rphoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewPhoto();
+            }
+        });
+        Button new_video = (Button)findViewById(R.id.video_button);
+        new_video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToVideo();
             }
         });
     }
@@ -73,6 +94,13 @@ public class CameraActivity extends AppCompatActivity {
         }
 
     }
+
+    private void goToVideo()
+    {
+        Intent intent = new Intent(this, CameraActivity2.class); //go to Next activity
+        startActivity(intent);
+    }
+
 
     /*private File getOutputMediaFile(int type){
         // To be safe, you should check that the SDCard is mounted

@@ -36,8 +36,8 @@ public class CameraActivity2 extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
-        Button new_video = (Button) findViewById(R.id.video_button);
+        setContentView(R.layout.activity_camera3);
+        Button new_video = (Button) findViewById(R.id.button_capture2);
         new_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
