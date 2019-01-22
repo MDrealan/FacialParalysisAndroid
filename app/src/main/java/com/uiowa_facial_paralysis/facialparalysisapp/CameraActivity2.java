@@ -44,6 +44,13 @@ public class CameraActivity2 extends AppCompatActivity {
                 startNewVideo();
             }
         });
+        Button back  = (Button) findViewById(R.id.back_button2);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBack();
+            }
+        });
     }
     private void startNewVideo()
     {
@@ -71,6 +78,12 @@ public class CameraActivity2 extends AppCompatActivity {
             mView.setImageBitmap(imageBitmap);
         }
 
+    }
+
+    private void goBack()
+    {
+        Intent intent = new Intent(this, CameraActivity.class); //go to Next activity
+        startActivity(intent);
     }
 
 
