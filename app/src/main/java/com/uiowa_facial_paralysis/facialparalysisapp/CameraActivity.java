@@ -55,6 +55,20 @@ public class CameraActivity extends AppCompatActivity {
                 startNewPhoto();
             }
         });
+        Button new_Pphoto = (Button)findViewById(R.id.pucker_button);
+        new_Pphoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewPhoto();
+            }
+        });
+        Button new_FFphoto = (Button)findViewById(R.id.frontface_button);
+        new_FFphoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewPhoto();
+            }
+        });
         Button new_video = (Button)findViewById(R.id.video_button);
         new_video.setOnClickListener(new View.OnClickListener() {
             @Override
