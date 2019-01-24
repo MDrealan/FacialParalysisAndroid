@@ -10,49 +10,75 @@
         android:id="@+id/front_button"
         android:layout_width="194dp"
         android:layout_height="57dp"
-        android:text="Front Facing Photo"
+        android:text="Eye Raise Photo"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.162" />
+        app:layout_constraintVertical_bias="0.103" />
 
     <Button
         android:id="@+id/left_button"
         android:layout_width="194dp"
         android:layout_height="57dp"
-        android:text="Left Side Photo"
+        android:text="Closed Eyes Photo"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.334" />
+        app:layout_constraintVertical_bias="0.274" />
 
     <Button
         android:id="@+id/right_button"
         android:layout_width="194dp"
         android:layout_height="57dp"
-        android:text="Right Side Photo"
+        android:text="Smile Photo"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.449" />
 
     <Button
         android:id="@+id/video_button"
-        android:layout_width="193dp"
-        android:layout_height="64dp"
+        android:layout_width="194dp"
+        android:layout_height="57dp"
         android:text="Motion Video"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.691" />
+        app:layout_constraintVertical_bias="0.968" />
+
+    <Button
+        android:id="@+id/pucker_button"
+        android:layout_width="194dp"
+        android:layout_height="57dp"
+        android:text="Pucker Photo"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.623" />
+
+    <Button
+        android:id="@+id/frontface_button"
+        android:layout_width="194dp"
+        android:layout_height="57dp"
+        android:text="Front Facing Photo"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.801" />
 
 </android.support.constraint.ConstraintLayout>
