@@ -115,8 +115,6 @@ public class NewFormActivity extends AppCompatActivity {
     {
         String questionPath = "formdata/synkinesis/";
         DatabaseReference basePath = database.getReference(questionPath);
-
-
         //Todo:: do these need to be static so that they can run before the constructor runs? That way we won't get threading issues.
         getDatabaseQuestions(basePath);
         // !!!! ANSWER call always goes AFTER question call, as its size is dependent on the amount of QUESTIONS.
@@ -184,6 +182,8 @@ public class NewFormActivity extends AppCompatActivity {
         //Always have the questionairre and photos save things to the ongoing page. Let selectPage do the deciding on whether a form is done (to move it to finalized).
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("answers").setValue(answers);
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("q_type").setValue("FACE");
+        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("question_done").setValue(true); //done with questions. Let the DB know.
+
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("image_references").setValue("not implemented!");
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("face_score").setValue("not implemented!");
     }
@@ -245,7 +245,8 @@ public class NewFormActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, SelectPage.class);
         intent.putExtra("USERNAME", username);
-        intent.putExtra("QUESTIONDONE", true); //done with questions
+        intent.putExtra("FORMID", formID);
+        intent.putExtra("QUESTIONSDONE", true); //also send it locally bc of firebase asynch tasks not being nice.
         intent.putExtra("ACTIVITYINITIALIZER", "NewFormActivity"); //Todo:: remove?
         startActivity(intent);
     }

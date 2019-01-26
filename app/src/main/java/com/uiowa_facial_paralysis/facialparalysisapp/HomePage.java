@@ -52,7 +52,9 @@ public class HomePage extends AppCompatActivity {
     {
         //verify here (call a method).
 
+
         Intent intent = new Intent(this, SelectPage.class); //go to Next activity
+        intent.putExtra("FORMID", 10); //Todo:: actually implement this
         intent.putExtra("USERNAME", username);
         startActivity(intent);
     }
