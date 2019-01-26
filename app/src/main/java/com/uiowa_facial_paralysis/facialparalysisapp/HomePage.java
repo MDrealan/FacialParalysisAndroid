@@ -33,6 +33,15 @@ public class HomePage extends AppCompatActivity {
                 startNewForm();
             }
         });
+
+
+        final Button logout = (Button) findViewById(R.id.logout_button);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userLogout();
+            }
+        });
     }
 
 
@@ -44,6 +53,13 @@ public class HomePage extends AppCompatActivity {
         //verify here (call a method).
 
         Intent intent = new Intent(this, SelectPage.class); //go to Next activity
+        intent.putExtra("USERNAME", username);
+        startActivity(intent);
+    }
+
+    private void userLogout()
+    {
+        Intent intent = new Intent(this, MainActivity.class); //go to Next activity
         intent.putExtra("USERNAME", username);
         startActivity(intent);
     }

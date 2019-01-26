@@ -103,9 +103,8 @@ public class NewFormActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        sendFinalForm();
-                        // Todo:: If photo portion is done, return to home, else, return to select page.
-                        returnToSelectPage();
+                        sendQuestionForm(); //send the form to the DB
+                        returnToSelectPage(); //return to the selection page, indicate that the question form is done.
                     }
                 }
             }
@@ -120,7 +119,7 @@ public class NewFormActivity extends AppCompatActivity {
 
         //Todo:: do these need to be static so that they can run before the constructor runs? That way we won't get threading issues.
         getDatabaseQuestions(basePath);
-        // !!!! ANSWER call always goes AFTER question call, as its size is dependant on the amount of QUESTIONS.
+        // !!!! ANSWER call always goes AFTER question call, as its size is dependent on the amount of QUESTIONS.
         getDatabaseAnswers(basePath);
         //getDatabaseStatements();
     }
@@ -165,7 +164,7 @@ public class NewFormActivity extends AppCompatActivity {
 
                         for(long j = 0; j < dataSnapshot.child(currQuestionAnswer).getChildrenCount(); j++)
 
-                        databaseAnswers.get((int)i).add(dataSnapshot.child(currQuestionAnswer).child(Long.toString(j)).getValue().toString());//ow, evenmorefunctioncalls.
+                        databaseAnswers.get((int)i).add(dataSnapshot.child(currQuestionAnswer).child(Long.toString(j)).getValue().toString());
                     }
                 }
             }
@@ -176,17 +175,13 @@ public class NewFormActivity extends AppCompatActivity {
         });
     }
 
-    //Todo:: only send final form if images are done (to be done later).
-    //Todo:: package the array for the DB in a nice format please.
-    private void sendFinalForm()
+    private void sendQuestionForm()
     {
         DatabaseReference ref = database.getReference();
 
         String answers = userAnswers.toString();
 
-        //need formID from selectPage. Let selectPage do the deciding on whether a form is done (to move it to finalized).
-
-
+        //Always have the questionairre and photos save things to the ongoing page. Let selectPage do the deciding on whether a form is done (to move it to finalized).
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("answers").setValue(answers);
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("q_type").setValue("FACE");
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("image_references").setValue("not implemented!");
@@ -195,6 +190,7 @@ public class NewFormActivity extends AppCompatActivity {
 
     private void setQandA()
     {
+        //changing the color of each radio button (not implemented)
         int color1 = getResources().getColor(R.color.colorPrimaryDark);
         int color2 = getResources().getColor(R.color.colorPrimary);
 
@@ -249,8 +245,8 @@ public class NewFormActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, SelectPage.class);
         intent.putExtra("USERNAME", username);
-        intent.putExtra("QUESTIONDONE", true); //Todo:: if not done (saved and exited), return false.
-        intent.putExtra("ACTIVITYINITIALIZER", "NewFormActivity"); //to tell
+        intent.putExtra("QUESTIONDONE", true); //done with questions
+        intent.putExtra("ACTIVITYINITIALIZER", "NewFormActivity"); //Todo:: remove?
         startActivity(intent);
     }
 
