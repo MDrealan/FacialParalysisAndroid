@@ -34,8 +34,7 @@ public class SelectPage extends AppCompatActivity {
         username = getIntent().getStringExtra("USERNAME");
         formID = getIntent().getIntExtra("FORMID", 0);
         questionsDone = getIntent().getBooleanExtra("QUESTIONSDONE", false);
-        String initializedBy = "HomePage";
-        //Todo:: send information to NewFormActivity indicating if the photos are done or not, so it can decide if it needs to submit the form or not..
+        photosDone = getIntent().getBooleanExtra("PHOTOSDONE", false);
 
         String questionPath = "forms/ongoing/" + username + "/" + formID + "/";
         basePath = database.getReference(questionPath);
@@ -84,10 +83,12 @@ public class SelectPage extends AppCompatActivity {
                 goHome();
             }
         });
-        if(questionsDone) {
+        if(questionsDone && photosDone) // && photosDone
+        {
             String completedStringPath = "forms/finalized/" + username + "/" + formID + "/";
             DatabaseReference completedPath = database.getReference(completedStringPath);
             moveFormToCompleted(basePath, completedPath);
+            removeIDFromOngoing();
         }
 
     }
@@ -104,51 +105,33 @@ public class SelectPage extends AppCompatActivity {
         {
 
         }
-        //What I need:
-            // form ID
-
-
     }
 
-    private void startPhotos()
+    private void removeIDFromOngoing()
     {
-        Intent intent = new Intent(this, CameraActivity.class);
-        intent.putExtra("USERNAME", username);
-        startActivity(intent);
-    }
-
-
-    private void startQuestions()
-    {
-        //verify here (call a method).
-
-        Intent intent = new Intent(this, NewFormActivity.class); //go to Next activity
-        intent.putExtra("FORMID", Integer.toString(formID));
-        intent.putExtra("USERNAME", username);
-        startActivity(intent);
-    }
-
-    private void goHome()
-    {
-        Intent intent = new Intent(this, HomePage.class); //go to Next activity
-        intent.putExtra("USERNAME", username);
-        startActivity(intent);
-    }
-
-    //find out if questions are done.
-    private void isQuestionDone(DatabaseReference basePath, final Button startQuestion)
-    {
-        basePath.child("question_done").addValueEventListener(new ValueEventListener() {
+        database.getReference("forms/ongoing/" + username + "/").child("ongoing_form_ids").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                if(dataSnapshot.exists()) //make sure the question variable is there
+                ArrayList <Integer> tempArr = new ArrayList<Integer>();
+                if(dataSnapshot.exists()) //make sure the questions are there.
                 {
-                    boolean questionsDone = Boolean.getBoolean(dataSnapshot.getValue().toString());
-                    if (questionsDone) {
-                        startQuestion.setAlpha(.5f);
-                        startQuestion.setClickable(false);
+                    String temp = dataSnapshot.getValue().toString();
+                    String[] parts = temp.split("[\\D]");
+                    // String[] parts = temp.split(" */ *");
+                    for(int i = 0; i < parts.length; i++)
+                    {
+                        if(IsInt_ByException(parts[i]))
+                        {
+                            if( formID == Integer.parseInt((parts[i])))
+                            { }
+                            else {
+                                tempArr.add(Integer.parseInt(parts[i]));
+                            }
+                        }
                     }
+                    //send updated form ID list to DB
+                    database.getReference().child("forms").child("ongoing").child(username).child("ongoing_form_ids").setValue(tempArr.toString());
                 }
             }
             @Override
@@ -156,6 +139,7 @@ public class SelectPage extends AppCompatActivity {
             }
         });
     }
+
     //base code from : https://stackoverflow.com/questions/40456443/how-to-move-firebase-child-from-one-node-to-another-in-android
     private void moveFormToCompleted(final DatabaseReference fromPath, final DatabaseReference toPath) {
         fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -176,6 +160,42 @@ public class SelectPage extends AppCompatActivity {
         });
     }
 
+    //https://stackoverflow.com/questions/237159/whats-the-best-way-to-check-if-a-string-represents-an-integer-in-java
+    private boolean IsInt_ByException(String str)
+    {
+        try
+        {
+            Integer.parseInt(str);
+            return true;
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+    }
+
+    private void startPhotos()
+    {
+        Intent intent = new Intent(this, CameraActivity.class);
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("QUESTIONSDONE", questionsDone);
+        startActivity(intent);
+    }
 
 
+    private void startQuestions()
+    {
+        Intent intent = new Intent(this, NewFormActivity.class); //go to Next activity
+        intent.putExtra("FORMID", Integer.toString(formID)); //so the question activity knows where to send the formID to.
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("PHOTOSDONE", photosDone);
+        startActivity(intent);
+    }
+
+    private void goHome()
+    {
+        Intent intent = new Intent(this, HomePage.class); //go to Next activity
+        intent.putExtra("USERNAME", username);
+        startActivity(intent);
+    }
 }

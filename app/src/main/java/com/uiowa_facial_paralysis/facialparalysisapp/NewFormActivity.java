@@ -1,8 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,28 +18,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class NewFormActivity extends AppCompatActivity {
-
-
-    ArrayList<TextView> questionRadios= new ArrayList<>();
     private ArrayList<String> userAnswers = new ArrayList<>();
 
     private int formID; //ID of the form.
+    private String photosDone;
+    private String username;
 
     private FirebaseDatabase database;
     private ArrayList<String> databaseQuestions;
     private ArrayList<ArrayList<String>> databaseAnswers; //nested because each question has multiple answers. index 0 of Arraylist<Arraylist<String>> contains the answers for question 1.
+    private ArrayList<Integer> ongoingFormIDS = new ArrayList<>();
 
     private TextView question;
 
     private int currentQuestion; //what question we're on.
     private RadioGroup answer_group;
-
-    private String formStartDate;
-
-    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +42,8 @@ public class NewFormActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_form);
 
         username = getIntent().getStringExtra("USERNAME");
-        Calendar temp =Calendar.getInstance();
-
         formID = Integer.parseInt(getIntent().getStringExtra("FORMID")); //current form ID
+        photosDone = getIntent().getStringExtra("PHOTOSDONE");
 
         //Questionview, radiogroup for answers. currentQuestion is the current question, duh.
         question = (TextView)findViewById(R.id.question_view);
@@ -63,10 +55,6 @@ public class NewFormActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         getDatabaseInfo(); //ALSO CALLS METHOD TO INITIALIZE FIRST QUESTION AND ANSWER!
-
-
-
-        //Set the initial text to the first questions.
 
         //Button Listener to go to the next question.
         final Button nextQuestion = (Button)findViewById(R.id.next_question_button);
@@ -82,7 +70,7 @@ public class NewFormActivity extends AppCompatActivity {
                     nextQuestion.setText("Next Question");
                 }
 
-                //if no option selected
+                //if no answer selected by user
                 if( answer_group.getCheckedRadioButtonId() == -1)
                 {
                     //dont do anything.
@@ -115,10 +103,10 @@ public class NewFormActivity extends AppCompatActivity {
     {
         String questionPath = "formdata/synkinesis/";
         DatabaseReference basePath = database.getReference(questionPath);
-        //Todo:: do these need to be static so that they can run before the constructor runs? That way we won't get threading issues.
         getDatabaseQuestions(basePath);
         // !!!! ANSWER call always goes AFTER question call, as its size is dependent on the amount of QUESTIONS.
         getDatabaseAnswers(basePath);
+        getOngoingForms();
         //getDatabaseStatements();
     }
 
@@ -173,16 +161,56 @@ public class NewFormActivity extends AppCompatActivity {
         });
     }
 
+    private void getOngoingForms()
+    {
+        database.getReference("forms/ongoing/" + username + "/").child("ongoing_form_ids").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.exists()) //make sure the questions are there.
+                {
+                    String temp = dataSnapshot.getValue().toString();
+                    String[] parts = temp.split("[\\D]");
+                   // String[] parts = temp.split(" */ *");
+                    for(int i = 0; i < parts.length; i++)
+                    {
+                        if(IsInt_ByException(parts[i]))
+                        {
+                            ongoingFormIDS.add(Integer.parseInt(parts[i]));
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    //https://stackoverflow.com/questions/237159/whats-the-best-way-to-check-if-a-string-represents-an-integer-in-java
+    private boolean IsInt_ByException(String str)
+    {
+        try
+        {
+            Integer.parseInt(str);
+            return true;
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+    }
+
     private void sendQuestionForm()
     {
         DatabaseReference ref = database.getReference();
-
         String answers = userAnswers.toString();
-
+        ongoingFormIDS.add(formID);
+        ref.child("forms").child("ongoing").child(username).child("ongoing_form_ids").setValue(ongoingFormIDS.toString());
         //Always have the questionairre and photos save things to the ongoing page. Let selectPage do the deciding on whether a form is done (to move it to finalized).
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("answers").setValue(answers);
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("q_type").setValue("FACE");
-        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("question_done").setValue(true); //done with questions. Let the DB know.
+        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("question_done").setValue(true); //done with questions. Let the DB know (for continuing forms)
 
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("image_references").setValue("not implemented!");
         ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("face_score").setValue("not implemented!");
@@ -233,20 +261,13 @@ public class NewFormActivity extends AppCompatActivity {
 
         currentQuestion++; //make sure you go to the next question~!
     }
-
-    //Todo::  modified to go back to the choose page if not everything has been completed for the form
-    private void returnToHome()
-    {
-        Intent intent = new Intent(this, HomePage.class); //go to Next activity
-        intent.putExtra("USERNAME", username);
-        startActivity(intent);
-    }
     private void returnToSelectPage()
     {
         Intent intent = new Intent(this, SelectPage.class);
         intent.putExtra("USERNAME", username);
         intent.putExtra("FORMID", formID);
         intent.putExtra("QUESTIONSDONE", true); //also send it locally bc of firebase asynch tasks not being nice.
+        intent.putExtra("PHOTOSDONE", photosDone);
         intent.putExtra("ACTIVITYINITIALIZER", "NewFormActivity"); //Todo:: remove?
         startActivity(intent);
     }
