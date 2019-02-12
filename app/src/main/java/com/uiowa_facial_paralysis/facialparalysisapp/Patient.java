@@ -1,5 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
@@ -12,8 +13,12 @@ public class Patient
     @NonNull
     @PrimaryKey
     private String patientID;
+
+    @ColumnInfo(name = "username")
     private String username;
+    @ColumnInfo(name = "email")
     private String email;
+    @ColumnInfo(name = "hashed_password")
     private String hashed_password;
 
     //make a new patient

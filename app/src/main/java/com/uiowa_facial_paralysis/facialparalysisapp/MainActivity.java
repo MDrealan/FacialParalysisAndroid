@@ -52,6 +52,7 @@ private PatientDatabase patientDB;
                 if(email.getText() != null && password.getText() != null)
                 {
                     verifyPassword(email.getText().toString(), password.getText().toString(), incorrectInput);
+                    verifyRoomPassword(email.getText().toString(), password.getText().toString(), incorrectInput);
                 }
             }
         });
@@ -81,6 +82,11 @@ private PatientDatabase patientDB;
 
     //////////////////////////////////////////////// VERIFICATION/SIGN UP //////////////////////////
 
+    public void verifyRoomPassword(String email, String password_guess, final TextView incorrect_input)
+    {
+        
+    }
+
 
     // Todo:: make a case for no email associated with input: Ask them to sign up?
     //verify users password.
@@ -105,7 +111,7 @@ private PatientDatabase patientDB;
                     if (decrypted_actual.equals(user_password))
                     {
                         username = userEmail;
-                        goToHomePage();
+                        //goToHomePage();
                     } else {
                         incorrect_input.setText("Invalid Input");
                     }
