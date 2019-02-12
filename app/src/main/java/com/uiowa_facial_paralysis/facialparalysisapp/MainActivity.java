@@ -1,5 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +21,17 @@ public class MainActivity extends AppCompatActivity
 
 private FirebaseDatabase database;
 private String username = "";
+private PatientDatabase patientDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //make db object for patient
+        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").fallbackToDestructiveMigration().build();
+
 
         //Firebase instance.
         database = FirebaseDatabase.getInstance();
