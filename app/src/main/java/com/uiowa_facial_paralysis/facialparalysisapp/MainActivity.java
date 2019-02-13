@@ -30,7 +30,7 @@ private PatientDatabase patientDB;
         setContentView(R.layout.activity_main);
 
         //make db object for patient
-        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").fallbackToDestructiveMigration().build();
+        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
 
 
         //Firebase instance.
@@ -51,7 +51,7 @@ private PatientDatabase patientDB;
                 //Make sure user input was an actual input.
                 if(email.getText() != null && password.getText() != null)
                 {
-                    verifyPassword(email.getText().toString(), password.getText().toString(), incorrectInput);
+                   // verifyPassword(email.getText().toString(), password.getText().toString(), incorrectInput); //FIREBASE => OLD
                     verifyRoomPassword(email.getText().toString(), password.getText().toString(), incorrectInput);
                 }
             }
@@ -84,7 +84,22 @@ private PatientDatabase patientDB;
 
     public void verifyRoomPassword(String email, String password_guess, final TextView incorrect_input)
     {
-        
+        Patient curr_patient = patientDB.patientAccessInterface().getPatientViaUserName(email);
+        if(curr_patient == null)
+        {
+            incorrect_input.setText("No User Exists.");
+        }
+        else {
+
+            if (curr_patient.getHashed_password().equals(AESCrypt.encrypt(password_guess)))
+            {
+                username = curr_patient.getUsername();
+                goToHomePage();
+            }
+            else {
+                incorrect_input.setText("Invalid Input");
+            }
+        }
     }
 
 
@@ -113,7 +128,7 @@ private PatientDatabase patientDB;
                         username = userEmail;
                         //goToHomePage();
                     } else {
-                        incorrect_input.setText("Invalid Input");
+                     //   incorrect_input.setText("Invalid Input");
                     }
                 }
                 else

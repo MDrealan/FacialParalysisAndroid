@@ -1,5 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 public class SignUp extends AppCompatActivity {
 
     private FirebaseDatabase database;
+    private PatientDatabase patientDB;
 
 
     //Todo:: don't allow for ridiculously long usernames, and try to suggest decent passwords.
@@ -27,6 +29,8 @@ public class SignUp extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+
 
         final EditText email = (EditText)findViewById(R.id.user_name);
         final EditText password = (EditText)findViewById(R.id.password);
@@ -44,7 +48,8 @@ public class SignUp extends AppCompatActivity {
                 {
                     if (passwordVerificationInput(password.getText().toString(), pasword_verify.getText().toString()))
                     {
-                        createNewUser(email.getText().toString(), password.getText().toString());
+                        //createNewUser(email.getText().toString(), password.getText().toString()); //FIREBASE => OLD
+                        createNewRoomUser(email.getText().toString(), password.getText().toString());
                         goToHomePage();
                     }
                     else
@@ -55,6 +60,15 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void createNewRoomUser(String username, String password)
+    {
+        //Encrypt the password.
+        String encryptedPassword = AESCrypt.encrypt(password);
+
+        Patient new_patient = new Patient(username, username, encryptedPassword, 0);
+        patientDB.patientAccessInterface().insertOnlySinglePatient(new_patient);
     }
 
 

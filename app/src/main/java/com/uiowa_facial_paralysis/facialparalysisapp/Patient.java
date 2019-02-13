@@ -5,7 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-//this is the interface to create a new patient, or access an existing patients data.
+//this is the interface to create a new patient, or access an existing patients data (after a db query request has been made from the PatientAccessInterface class).
 
 @Entity
 public class Patient
@@ -20,21 +20,29 @@ public class Patient
     private String email;
     @ColumnInfo(name = "hashed_password")
     private String hashed_password;
+    @ColumnInfo(name = "current_form")
+    private int current_form;
 
     //make a new patient
-    public Patient()
+    public Patient(String username, String email, String hashed_password, int current_form)
     {
+        this.username = username;
+        this.email = email;
+        this.hashed_password = hashed_password;
+        this.current_form = current_form;
+        this.patientID = "1"; //TODO:: auto-increment?
+    }
 
+    public int getCurrent_form() {
+        return current_form;
+    }
+
+    public void setCurrent_form(int current_form) {
+        this.current_form = current_form;
     }
 
 
-
-
-
-
-
-
-    ///GETTERS AND SETTERS
+///GETTERS AND SETTERS
 
     @NonNull
     public String getPatientID() {
