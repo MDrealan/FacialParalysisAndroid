@@ -112,6 +112,8 @@ public class HomePage extends AppCompatActivity {
             {
                 FileWriter writer = new FileWriter(fileToWriteTo);
 
+                writer.write(currPatient.getUsername() + '\n'); //patient name first.
+
                 for (int i = 0; i < newPatientForms.size(); i++)
                 {
                     String formToWrite = newPatientForms.get(i).toString();
