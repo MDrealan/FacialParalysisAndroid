@@ -1,5 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -36,8 +37,14 @@ public class NewFormActivity extends AppCompatActivity {
     private int currentQuestion; //what question we're on.
     private RadioGroup answer_group;
 
+    private PatientDatabase patientDB;
+    private FormDatabase formDB;
+    private Form newForm;
+    private Patient currPatient;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_form);
 
@@ -52,6 +59,11 @@ public class NewFormActivity extends AppCompatActivity {
 
         databaseQuestions = new ArrayList<String>();
         databaseAnswers = new ArrayList<ArrayList<String>>();
+
+        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+        formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+
+        currPatient = patientDB.patientAccessInterface().getPatientViaUserName(username); //using getIntents to maintain state information with just a couple of variables being passed around.
 
         database = FirebaseDatabase.getInstance();
         getDatabaseInfo(); //ALSO CALLS METHOD TO INITIALIZE FIRST QUESTION AND ANSWER!
@@ -101,6 +113,9 @@ public class NewFormActivity extends AppCompatActivity {
     //Todo:: Modify database so that we have multiple questionairre forms (currently formdata path is just one questionaiire. woopsies :)
     private void getDatabaseInfo()
     {
+        newForm = new Form("not_implemented", "FACE", currPatient.getPatientID() );
+     //   formDB.getFormAccessInterface().insert(newForm);
+
         String questionPath = "formdata/synkinesis/";
         DatabaseReference basePath = database.getReference(questionPath);
         getDatabaseQuestions(basePath);
@@ -203,6 +218,19 @@ public class NewFormActivity extends AppCompatActivity {
 
     private void sendQuestionForm()
     {
+        String[] userAnswerArray = new String[userAnswers.size()];
+        userAnswerArray = userAnswers.toArray(userAnswerArray);
+        //newForm.setUserAnswers(userAnswerArray);
+        newForm.setQuestionDone(true);
+        if(newForm.isPhotoDone()) //if photo is done as well, then form is complete. Todo:: can route to home page if so.
+        {
+            newForm.setComplete(true);
+        }
+        newForm.setUserAnswers(userAnswers.toString()); //Todo:: check if this can be parsed properly by Rails and for export to csv.
+        formDB.getFormAccessInterface().update(newForm); //update form information.
+
+        ///////////////////////////////////// OLD FIREBASE BELOW:
+
         DatabaseReference ref = database.getReference();
         String answers = userAnswers.toString();
         ongoingFormIDS.add(formID);

@@ -12,7 +12,7 @@ public class Patient
 {
     @NonNull
     @PrimaryKey
-    private String patientID;
+    private int patientID;
 
     @ColumnInfo(name = "username")
     private String username;
@@ -30,7 +30,7 @@ public class Patient
         this.email = email;
         this.hashed_password = hashed_password;
         this.current_form = current_form;
-        this.patientID = "1"; //TODO:: auto-increment?
+        this.patientID = 1; //TODO:: auto-increment?
     }
 
     public int getCurrent_form() {
@@ -45,11 +45,11 @@ public class Patient
 ///GETTERS AND SETTERS
 
     @NonNull
-    public String getPatientID() {
+    public int getPatientID() {
         return patientID;
     }
 
-    public void setPatientID(@NonNull String patientID) {
+    public void setPatientID(@NonNull int patientID) {
         this.patientID = patientID;
     }
 

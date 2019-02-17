@@ -32,7 +32,6 @@ private PatientDatabase patientDB;
         //make db object for patient
         patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
 
-
         //Firebase instance.
         database = FirebaseDatabase.getInstance();
 
