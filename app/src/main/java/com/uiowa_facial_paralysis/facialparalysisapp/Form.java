@@ -38,6 +38,7 @@ public class Form
         this.name = name;
         this.formType = formType;
         this.patientID = patientID;
+        this.faceScore = 0;
     }
 
 
@@ -45,6 +46,14 @@ public class Form
 
 
     //GETTERS/SETTERS
+    @Override public String toString()
+    {
+        String curr_id = Integer.toString(this.patientID);
+        String formType = this.getFormType();
+        String formScore = Integer.toString(this.getFaceScore());
+        String formAnswers = this.getUserAnswers();
+        return curr_id + " , " + formType + " , " + formScore + " , " + formAnswers;
+    }
 
 
     public String getUserAnswers() {

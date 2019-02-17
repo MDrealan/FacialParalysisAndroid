@@ -2,9 +2,11 @@ package com.uiowa_facial_paralysis.facialparalysisapp;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,7 +17,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class HomePage extends AppCompatActivity {
@@ -96,10 +103,59 @@ public class HomePage extends AppCompatActivity {
 
     private void exportNewForms(Button button)
     {
-        //Todo:: implement
         List<Form> newPatientForms = formDB.getFormAccessInterface().getPatientNewForms(currPatient.getPatientID(), true);
-        button.setText(newPatientForms.toString());
+
+        if(isExternalStorageWritable())
+        {
+            File fileToWriteTo = getPublicAlbumStorageDir("PatientRecordsFor" + currPatient.getUsername());
+            try
+            {
+                FileWriter writer = new FileWriter(fileToWriteTo);
+
+                for (int i = 0; i < newPatientForms.size(); i++)
+                {
+                    String formToWrite = newPatientForms.get(i).toString();
+                    writer.write(formToWrite + '\n');
+                }
+                writer.flush();
+                writer.close();
+                button.setText("EXPORTED!");
+            }
+            catch(IOException ioException)
+            {
+                ioException.printStackTrace();
+                button.setText("Unable To Export");
+            }
+        }
+        else
+        {
+            button.setText("Device Unconnected");
+        }
+        //first line: patient information (so we can just update existing patient or create new in the add patient option in ruby)
+        //currPatient.getUsername(), currPatient.getPatientID();
+        //second line to end:
+        //newPatientForms.get(0).patientID, newPatientForms.get(0).getFormType(), newPatientForms.get(0).getUserAnswers(), newPatientForms.get(0).getFaceScore(), newPatientForms.get(0).getPhotos();
     }
+    //check if usb is connected and user allowed permissions (grabbed from google).
+            public boolean isExternalStorageWritable()
+            {
+                String state = Environment.getExternalStorageState();
+                if(Environment.MEDIA_MOUNTED.equals(state))
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            public File getPublicAlbumStorageDir(String albumName)
+            {
+                Date current_date = new Date();
+                String user_file = "patientData" + current_date.toString() + ".csv";
+                // Get the directory for the user's public document directory.
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+                File new_file = new File(path, user_file);
+                return new_file;
+            }
 
     private void startNewForm()
     {
