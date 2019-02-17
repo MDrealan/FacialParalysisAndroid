@@ -18,11 +18,11 @@
         android:text="Logout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settings_button"
+        app:layout_constraintStart_toEndOf="@+id/export_forms_button"
         app:layout_constraintTop_toBottomOf="@+id/continue_form_button" />
 
     <Button
-        android:id="@+id/settings_button"
+        android:id="@+id/export_forms_button"
         android:layout_width="140sp"
         android:layout_height="140sp"
         android:layout_marginStart="34dp"
@@ -30,7 +30,7 @@
         android:layout_marginEnd="210dp"
         android:layout_marginBottom="60dp"
         android:background="@color/colorPrimaryDark"
-        android:text="Settings"
+        android:text="Export Forms"
         android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

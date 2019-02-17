@@ -1,5 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomePage extends AppCompatActivity {
 
@@ -22,6 +24,12 @@ public class HomePage extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference dataRef;
     private ArrayList<Integer> ongoingFormIDS = new ArrayList<>();
+
+    private PatientDatabase patientDB;
+    private FormDatabase formDB;
+
+    private Patient currPatient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,6 +40,11 @@ public class HomePage extends AppCompatActivity {
         setContentView(R.layout.activity_second);
 
         username = getIntent().getStringExtra("USERNAME");
+
+        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+        formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+        currPatient = patientDB.patientAccessInterface().getPatientViaUserName(username); //using getIntents to maintain state information with just a couple of variables being passed around.
+
         dataRef = database.getReference("forms/ongoing/" + username + "/");
 
         String welcome = "Welcome, " + username;
@@ -57,6 +70,7 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+        //LOGOUT
         final Button logout = (Button) findViewById(R.id.logout_button);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,13 +79,27 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+
+        //EXPORT
+        final Button export_forms = (Button) findViewById(R.id.export_forms_button);
+        export_forms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                exportNewForms(export_forms);
+            }
+        });
+
         //get all form ID's
         getOngoingForms();
     }
 
-
-    //Todo:: VERIFY the user should start a new form (in other words, it's been about XX days since their last form input
-    //Todo:: ^ don't do verification in startNewForm(), have startNewForm() call a verification method.
+    private void exportNewForms(Button button)
+    {
+        //Todo:: implement
+        List<Form> newPatientForms = formDB.getFormAccessInterface().getPatientNewForms(currPatient.getPatientID(), true);
+        button.setText(newPatientForms.toString());
+    }
 
     private void startNewForm()
     {

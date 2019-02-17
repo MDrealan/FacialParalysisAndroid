@@ -21,4 +21,7 @@ public interface FormAccessInterface
 
     @Query("SELECT * FROM form WHERE patientID=:patientID")
     List<Form> getPatientForms(final int patientID);
+
+    @Query("SELECT * FROM form WHERE patientID=:patientID AND isNewForm=:isNewForm")
+    List<Form> getPatientNewForms(final int patientID, final boolean isNewForm);
 }

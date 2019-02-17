@@ -227,7 +227,7 @@ public class NewFormActivity extends AppCompatActivity {
             newForm.setComplete(true);
         }
         newForm.setUserAnswers(userAnswers.toString()); //Todo:: check if this can be parsed properly by Rails and for export to csv.
-        formDB.getFormAccessInterface().update(newForm); //update form information.
+        formDB.getFormAccessInterface().insert(newForm); //update form information.
 
         ///////////////////////////////////// OLD FIREBASE BELOW:
 
