@@ -113,7 +113,7 @@ public class NewFormActivity extends AppCompatActivity {
     //Todo:: Modify database so that we have multiple questionairre forms (currently formdata path is just one questionaiire. woopsies :)
     private void getDatabaseInfo()
     {
-        newForm = new Form("not_implemented", "FACE", currPatient.getPatientID() );
+        newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), 0);
      //   formDB.getFormAccessInterface().insert(newForm);
 
         String questionPath = "formdata/synkinesis/";
@@ -226,7 +226,15 @@ public class NewFormActivity extends AppCompatActivity {
         {
             newForm.setComplete(true);
         }
-        newForm.setUserAnswers(userAnswers.toString()); //Todo:: check if this can be parsed properly by Rails and for export to csv.
+
+        StringBuilder user_answer_sb = new StringBuilder();
+        for (int i = 0; i < userAnswers.size(); i++)
+        {
+            user_answer_sb.append(userAnswers.get(i).toString());
+            user_answer_sb.append(" ## ");
+        }
+
+        newForm.setUserAnswers(user_answer_sb.toString());
         formDB.getFormAccessInterface().insert(newForm); //update form information.
 
         ///////////////////////////////////// OLD FIREBASE BELOW:

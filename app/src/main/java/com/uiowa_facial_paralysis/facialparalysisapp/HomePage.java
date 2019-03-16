@@ -103,7 +103,9 @@ public class HomePage extends AppCompatActivity {
 
     private void exportNewForms(Button button)
     {
-        List<Form> newPatientForms = formDB.getFormAccessInterface().getPatientNewForms(currPatient.getPatientID(), true);
+      //  List<Form> newPatientForms = formDB.getFormAccessInterface().getPatientNewForms(currPatient.getPatientID(), true);
+        //switched to ask via string due to issues with integer increments on a local DB server.
+        List<Form> newPatientForms = formDB.getFormAccessInterface().getPatientNewFormsViaEmail(currPatient.getEmail(), true);
 
         if(isExternalStorageWritable())
         {

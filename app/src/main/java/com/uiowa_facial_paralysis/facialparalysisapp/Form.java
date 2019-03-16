@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
+
 @Entity
 public class Form
 {
@@ -18,6 +19,7 @@ public class Form
     private String name;
     private String formType;
     private String userAnswers;
+    private String username;
 
     private boolean isComplete = false;
     private boolean isQuestionDone = false;
@@ -31,11 +33,12 @@ public class Form
 
     public final int patientID;
 
-    public Form(String name,String formType, final int patientID)
+    public Form(String name,String formType, String username, final int patientID)
     {
         this.id = currentFormNumber;
         currentFormNumber++;
         this.name = name;
+        this.username = username;
         this.formType = formType;
         this.patientID = patientID;
         this.faceScore = 0;
@@ -48,13 +51,20 @@ public class Form
     //GETTERS/SETTERS
     @Override public String toString()
     {
-        String curr_id = Integer.toString(this.patientID);
+        String curr_name = this.username;
         String formType = this.getFormType();
         String formScore = Integer.toString(this.getFaceScore());
         String formAnswers = this.getUserAnswers();
-        return curr_id + " , " + formType + " , " + formScore + " , " + formAnswers;
+        return curr_name + " , " + formType + " , " + formScore + " , " + formAnswers;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String patientEmail) {
+        this.username = patientEmail;
+    }
 
     public String getUserAnswers() {
         return userAnswers;
