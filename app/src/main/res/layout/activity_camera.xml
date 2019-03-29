@@ -43,19 +43,6 @@
         app:layout_constraintVertical_bias="0.449" />
 
     <Button
-        android:id="@+id/video_button"
-        android:layout_width="194dp"
-        android:layout_height="57dp"
-        android:text="Motion Video"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.968" />
-
-    <Button
         android:id="@+id/pucker_button"
         android:layout_width="194dp"
         android:layout_height="57dp"
