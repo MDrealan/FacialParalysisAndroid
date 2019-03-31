@@ -177,6 +177,7 @@ public class SelectPage extends AppCompatActivity {
     private void startPhotos()
     {
         Intent intent = new Intent(this, CameraActivity.class);
+        intent.putExtra("FORMID", Integer.toString(formID)); //so the question activity knows where to send the formID to.
         intent.putExtra("USERNAME", username);
         intent.putExtra("QUESTIONSDONE", questionsDone);
         startActivity(intent);

@@ -1,5 +1,6 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Camera;
@@ -16,10 +17,15 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -32,10 +38,34 @@ public class CameraActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 101;
     private String currentPhotoPath;
     private static final int REQUEST_TAKE_PHOTO = 1;
+
+    //db and user variables (user vars passed around activities)
+    private int formID; //ID of the form.
+    private String questionsDone;
+    private String username;
+
+    private PatientDatabase patientDB;
+    private FormDatabase formDB;
+    private Form newForm;
+    private Patient currPatient;
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        //set up db variables.
+        username = getIntent().getStringExtra("USERNAME");
+        formID = Integer.parseInt(getIntent().getStringExtra("FORMID")); //current form ID
+        questionsDone = getIntent().getStringExtra("QUESTIONSDONE");
+
+        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+        formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+        currPatient = patientDB.patientAccessInterface().getPatientViaUserName(username);
+        //set up a new form to add pictures to.
+        newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), 0);
+
         Button new_Fphoto = (Button)findViewById(R.id.front_button);
         new_Fphoto.setOnClickListener(new View.OnClickListener() {
             @Override

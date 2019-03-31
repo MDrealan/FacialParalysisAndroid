@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ public class Form
     private static int currentFormNumber = 0; //Todo:: this is present on class creation, but doesn't persist beyond app closing/opening again.
 
     @PrimaryKey public int id;
+    private int formID;
     private String name;
     private String formType;
     private String userAnswers;
@@ -28,6 +30,12 @@ public class Form
     private boolean isNewForm = true; //new forms for export. if this is false, it won't be exported.
 
     private int faceScore;
+
+   // @TypeConverters(ImageConverter.class)
+    //private ArrayList<byte[]> images;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] image;
+
    // private ArrayList<String> userAnswers;
     //private String[] userAnswers;
 
@@ -36,12 +44,14 @@ public class Form
     public Form(String name,String formType, String username, final int patientID)
     {
         this.id = currentFormNumber;
+        this.formID = id;
         currentFormNumber++;
         this.name = name;
         this.username = username;
         this.formType = formType;
         this.patientID = patientID;
         this.faceScore = 0;
+        image = "aslkdhjg".getBytes(); //just testing to see if it works on form creation (will be overwritten anyway)
     }
 
 
@@ -56,6 +66,22 @@ public class Form
         String formScore = Integer.toString(this.getFaceScore());
         String formAnswers = this.getUserAnswers();
         return curr_name + " , " + formType + " , " + formScore + " , " + formAnswers;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public int getFormID() {
+        return formID;
+    }
+
+    public void setFormID(int formID) {
+        this.formID = formID;
     }
 
     public String getUsername() {

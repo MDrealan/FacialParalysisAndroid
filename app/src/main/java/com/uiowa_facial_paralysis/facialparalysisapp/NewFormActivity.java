@@ -113,9 +113,13 @@ public class NewFormActivity extends AppCompatActivity {
     //Todo:: Modify database so that we have multiple questionairre forms (currently formdata path is just one questionaiire. woopsies :)
     private void getDatabaseInfo()
     {
+        //always create a new form - only check if photos are done at the end.
         newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), 0);
-     //   formDB.getFormAccessInterface().insert(newForm);
 
+
+
+
+     //   formDB.getFormAccessInterface().insert(newForm);
         String questionPath = "formdata/synkinesis/";
         DatabaseReference basePath = database.getReference(questionPath);
         getDatabaseQuestions(basePath);
@@ -233,10 +237,21 @@ public class NewFormActivity extends AppCompatActivity {
             user_answer_sb.append(userAnswers.get(i).toString());
             user_answer_sb.append(" ## ");
         }
-
         newForm.setUserAnswers(user_answer_sb.toString());
-        formDB.getFormAccessInterface().insert(newForm); //update form information.
 
+        //check if photos are done, if so then just transfer form info.
+        if(photosDone == null) {
+            formDB.getFormAccessInterface().insert(newForm); //update form information.
+        }
+        else //the photos were completed and already exist in a form, so just update that form.
+        {
+            Form formToUpdate = formDB.getFormAccessInterface().getFormViaID(formID);
+            formToUpdate.setUserAnswers(user_answer_sb.toString());
+            formToUpdate.setComplete(true);
+            formToUpdate.setQuestionDone(true);
+            formDB.getFormAccessInterface().update(formToUpdate);
+            newForm = formToUpdate; //just for Completion (hard to make a mistake by sending the deprecated form information along).
+        }
         ///////////////////////////////////// OLD FIREBASE BELOW:
 
         DatabaseReference ref = database.getReference();
