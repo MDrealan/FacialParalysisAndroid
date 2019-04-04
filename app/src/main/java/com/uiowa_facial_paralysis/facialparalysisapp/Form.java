@@ -17,7 +17,7 @@ public class Form
 {
     private static int currentFormNumber = 0; //Todo:: this is present on class creation, but doesn't persist beyond app closing/opening again.
 
-    @PrimaryKey public int id;
+    @PrimaryKey public long id;
     private long formID;
     private String name;
     private String formType;
@@ -44,8 +44,8 @@ public class Form
 
     public Form(String name,String formType, String username, final int patientID)
     {
-        this.id = currentFormNumber;
         this.formID = new Date().getTime();
+        this.id = formID;
         currentFormNumber++;
         this.name = name;
         this.username = username;
@@ -101,7 +101,7 @@ public class Form
         this.userAnswers = userAnswers;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
