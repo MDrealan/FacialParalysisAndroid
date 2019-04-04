@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
@@ -17,7 +18,7 @@ public class Form
     private static int currentFormNumber = 0; //Todo:: this is present on class creation, but doesn't persist beyond app closing/opening again.
 
     @PrimaryKey public int id;
-    private int formID;
+    private long formID;
     private String name;
     private String formType;
     private String userAnswers;
@@ -44,7 +45,7 @@ public class Form
     public Form(String name,String formType, String username, final int patientID)
     {
         this.id = currentFormNumber;
-        this.formID = id;
+        this.formID = new Date().getTime();
         currentFormNumber++;
         this.name = name;
         this.username = username;
@@ -76,11 +77,11 @@ public class Form
         this.image = image;
     }
 
-    public int getFormID() {
+    public long getFormID() {
         return formID;
     }
 
-    public void setFormID(int formID) {
+    public void setFormID(long formID) {
         this.formID = formID;
     }
 

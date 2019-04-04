@@ -20,7 +20,7 @@ public interface FormAccessInterface
     void delete(Form... form_to_delete);
 
     @Query("SELECT * FROM form WHERE formID=:formID")
-    Form getFormViaID(final int formID);
+    Form getFormViaID(final long formID);
 
     @Query("SELECT * FROM form WHERE patientID=:patientID")
     List<Form> getPatientForms(final int patientID);

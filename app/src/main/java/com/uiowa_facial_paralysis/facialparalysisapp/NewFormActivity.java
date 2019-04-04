@@ -23,8 +23,8 @@ import java.util.ArrayList;
 public class NewFormActivity extends AppCompatActivity {
     private ArrayList<String> userAnswers = new ArrayList<>();
 
-    private int formID; //ID of the form.
-    private String photosDone;
+    private long formID; //ID of the form.
+    private String photosDone = "FALSE";
     private String username;
 
     private FirebaseDatabase database;
@@ -117,6 +117,7 @@ public class NewFormActivity extends AppCompatActivity {
         newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), 0);
 
 
+        //OLD code below - firebase.
 
 
      //   formDB.getFormAccessInterface().insert(newForm);
@@ -235,7 +236,7 @@ public class NewFormActivity extends AppCompatActivity {
         for (int i = 0; i < userAnswers.size(); i++)
         {
             user_answer_sb.append(userAnswers.get(i).toString());
-            user_answer_sb.append(" ## ");
+            user_answer_sb.append(" , ");
         }
         newForm.setUserAnswers(user_answer_sb.toString());
 
@@ -256,15 +257,15 @@ public class NewFormActivity extends AppCompatActivity {
 
         DatabaseReference ref = database.getReference();
         String answers = userAnswers.toString();
-        ongoingFormIDS.add(formID);
-        ref.child("forms").child("ongoing").child(username).child("ongoing_form_ids").setValue(ongoingFormIDS.toString());
+       // ongoingFormIDS.add(formID);
+       // ref.child("forms").child("ongoing").child(username).child("ongoing_form_ids").setValue(ongoingFormIDS.toString());
         //Always have the questionairre and photos save things to the ongoing page. Let selectPage do the deciding on whether a form is done (to move it to finalized).
-        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("answers").setValue(answers);
-        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("q_type").setValue("FACE");
-        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("question_done").setValue(true); //done with questions. Let the DB know (for continuing forms)
+       // ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("answers").setValue(answers);
+       // ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("q_type").setValue("FACE");
+       // ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("question_done").setValue(true); //done with questions. Let the DB know (for continuing forms)
 
-        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("image_references").setValue("not implemented!");
-        ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("face_score").setValue("not implemented!");
+       // ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("image_references").setValue("not implemented!");
+       // ref.child("forms").child("ongoing").child(username).child(Integer.toString(formID)).child("face_score").setValue("not implemented!");
     }
 
     private void setQandA()

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -40,8 +41,8 @@ public class CameraActivity extends AppCompatActivity {
     private static final int REQUEST_TAKE_PHOTO = 1;
 
     //db and user variables (user vars passed around activities)
-    private int formID; //ID of the form.
-    private String questionsDone;
+    private long formID; //ID of the form.
+    private boolean questionsDone;
     private String username;
 
     private PatientDatabase patientDB;
@@ -55,14 +56,15 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        //set up db variables.
+        //get the variables from the previous activity.
         username = getIntent().getStringExtra("USERNAME");
-        formID = Integer.parseInt(getIntent().getStringExtra("FORMID")); //current form ID
-        questionsDone = getIntent().getStringExtra("QUESTIONSDONE");
+        formID = Long.parseLong(getIntent().getStringExtra("FORMID")); //current form ID
+        questionsDone = getIntent().getBooleanExtra("QUESTIONSDONE", false); //see if the photos are done.
 
         patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
         formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
         currPatient = patientDB.patientAccessInterface().getPatientViaUserName(username);
+
         //set up a new form to add pictures to.
         newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), 0);
 
@@ -108,19 +110,67 @@ public class CameraActivity extends AppCompatActivity {
                 goToVideo();
             }
         });*/
+
+        Button return_to_select = (Button)findViewById(R.id.returnToSelect);
+        return_to_select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveData();
+                returnToSelectPage();
+            }
+        });
     }
 
+    private void saveData()
+    {
+        //check if existing form exists from the questions
+        if(questionsDone)
+        {
+            Form formToUpdate = formDB.getFormAccessInterface().getFormViaID(formID);
+            formToUpdate.setImage(newForm.getImage());
+            formToUpdate.setComplete(true);
+            formToUpdate.setPhotoDone(true);
+            formDB.getFormAccessInterface().update(formToUpdate);
+            newForm = formToUpdate; //just for Completion (hard to make a mistake by sending the deprecated form information along).
+        }
+        else //we actually have a new form to insert.
+        {
+            formDB.getFormAccessInterface().insert(newForm);
+        }
+    }
+
+    private void returnToSelectPage()
+    {
+        Intent intent = new Intent(this, SelectPage.class);
+        intent.putExtra("USERNAME", username);
+        intent.putExtra("FORMID", formID);
+        intent.putExtra("QUESTIONSDONE", questionsDone);
+        intent.putExtra("PHOTOSDONE", true); //done with photos.
+        intent.putExtra("ACTIVITYINITIALIZER", "NewFormActivity"); //Todo:: remove?
+        startActivity(intent);
+    }
 
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+       // if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
             Bundle extras = data.getExtras();
-            Log.e("URI",imageUri.toString());
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mView.setImageBitmap(imageBitmap);
-        }
+      //      Log.e("URI",imageUri.toString());
+         //   Bitmap imageBitmap = (Bitmap) extras.get("data");
+          //  mView.setImageBitmap(imageBitmap);
+
+        Bitmap bmp = (Bitmap) data.getExtras().get("data");
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        bmp.recycle();
+
+        //add image to form (only one supported currently)
+        //doesn't save it to the database. this needs to be done later.
+        newForm.setImage(byteArray);
+
+    //    }
 
     }
 
@@ -149,22 +199,22 @@ public class CameraActivity extends AppCompatActivity {
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
+          //  File photoFile = null;
+          //  try {
+          //      photoFile = createImageFile();
+         //   } catch (IOException ex) {
                 // Error occurred while creating the File
 
             }
             // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+         //   if (photoFile != null) {
+            //    Uri photoURI = FileProvider.getUriForFile(this,
+             //           "com.example.android.fileprovider",
+                //        photoFile);
+                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
+         //   }
+       // }
     }
 
     private void goToVideo()
