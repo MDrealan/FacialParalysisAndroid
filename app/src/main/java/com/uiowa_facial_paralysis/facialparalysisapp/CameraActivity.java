@@ -1,7 +1,9 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.Manifest;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Camera;
 import android.hardware.camera2.CameraDevice;
@@ -10,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -58,15 +61,16 @@ public class CameraActivity extends AppCompatActivity {
 
         //get the variables from the previous activity.
         username = getIntent().getStringExtra("USERNAME");
-        formID = Long.parseLong(getIntent().getStringExtra("FORMID")); //current form ID
-        questionsDone = getIntent().getBooleanExtra("QUESTIONSDONE", false); //see if the photos are done.
+       // formID = Long.parseLong(getIntent().getStringExtra("FORMID")); //current form ID
+        formID = getIntent().getLongExtra("FORMID", 0);
+        questionsDone = getIntent().getBooleanExtra("QUESTIONSDONE", false); //see if the questions are done.
 
         patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
         formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
         currPatient = patientDB.patientAccessInterface().getPatientViaUserName(username);
 
         //set up a new form to add pictures to.
-        newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), 0);
+        newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), username);
 
         Button new_Fphoto = (Button)findViewById(R.id.front_button);
         new_Fphoto.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +115,7 @@ public class CameraActivity extends AppCompatActivity {
             }
         });*/
 
-        Button return_to_select = (Button)findViewById(R.id.returnToSelect);
+        Button return_to_select = (Button)findViewById(R.id.FinishPhoto);
         return_to_select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +123,14 @@ public class CameraActivity extends AppCompatActivity {
                 returnToSelectPage();
             }
         });
+
+        //in reality, this should be wrapped around the function that actually stores data (not good practice technically).
+        int check = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        if (check == PackageManager.PERMISSION_GRANTED) {
+            //Do something
+        } else {
+            requestPermissions(new String[]{Manifest.permission.CAMERA},1024);
+        }
     }
 
     private void saveData()
@@ -136,6 +148,7 @@ public class CameraActivity extends AppCompatActivity {
         else //we actually have a new form to insert.
         {
             formDB.getFormAccessInterface().insert(newForm);
+            formID = newForm.getFormID();
         }
     }
 

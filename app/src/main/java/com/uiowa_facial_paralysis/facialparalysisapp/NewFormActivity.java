@@ -1,8 +1,11 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.Manifest;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -24,7 +27,7 @@ public class NewFormActivity extends AppCompatActivity {
     private ArrayList<String> userAnswers = new ArrayList<>();
 
     private long formID; //ID of the form.
-    private String photosDone = "FALSE";
+    private boolean photosDone = false;
     private String username;
 
     private FirebaseDatabase database;
@@ -41,6 +44,8 @@ public class NewFormActivity extends AppCompatActivity {
     private FormDatabase formDB;
     private Form newForm;
     private Patient currPatient;
+    private Form formToUpdate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,8 +54,8 @@ public class NewFormActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_form);
 
         username = getIntent().getStringExtra("USERNAME");
-        formID = Integer.parseInt(getIntent().getStringExtra("FORMID")); //current form ID
-        photosDone = getIntent().getStringExtra("PHOTOSDONE");
+        formID = getIntent().getLongExtra("FORMID", 0);
+        photosDone = getIntent().getBooleanExtra("PHOTOSDONE", false);
 
         //Questionview, radiogroup for answers. currentQuestion is the current question, duh.
         question = (TextView)findViewById(R.id.question_view);
@@ -64,6 +69,11 @@ public class NewFormActivity extends AppCompatActivity {
         formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
 
         currPatient = patientDB.patientAccessInterface().getPatientViaUserName(username); //using getIntents to maintain state information with just a couple of variables being passed around.
+
+        if(photosDone)
+        {
+            formToUpdate = formDB.getFormAccessInterface().getFormViaID(formID);
+        }
 
         database = FirebaseDatabase.getInstance();
         getDatabaseInfo(); //ALSO CALLS METHOD TO INITIALIZE FIRST QUESTION AND ANSWER!
@@ -109,12 +119,21 @@ public class NewFormActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //in reality, this should be wrapped around the function that actually stores data (not good practice technically).
+        int check = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (check == PackageManager.PERMISSION_GRANTED) {
+            //Do something
+        } else {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1024);
+        }
+
     }
     //Todo:: Modify database so that we have multiple questionairre forms (currently formdata path is just one questionaiire. woopsies :)
     private void getDatabaseInfo()
     {
         //always create a new form - only check if photos are done at the end.
-        newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), 0);
+        newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), username);
 
 
         //OLD code below - firebase.
@@ -240,13 +259,14 @@ public class NewFormActivity extends AppCompatActivity {
         }
         newForm.setUserAnswers(user_answer_sb.toString());
 
-        //check if photos are done, if so then just transfer form info.
-        if(photosDone == null) {
-            formDB.getFormAccessInterface().insert(newForm); //update form information.
+        //check if photos are done, if so (the else pathway) then just transfer form info.
+        if(!photosDone) {
+            formDB.getFormAccessInterface().insert(newForm); //throw form information as a new form.
+            formID = newForm.getFormID();
         }
         else //the photos were completed and already exist in a form, so just update that form.
         {
-            Form formToUpdate = formDB.getFormAccessInterface().getFormViaID(formID);
+            //formToUpdate = formDB.getFormAccessInterface().getFormViaID(formID);
             formToUpdate.setUserAnswers(user_answer_sb.toString());
             formToUpdate.setComplete(true);
             formToUpdate.setQuestionDone(true);

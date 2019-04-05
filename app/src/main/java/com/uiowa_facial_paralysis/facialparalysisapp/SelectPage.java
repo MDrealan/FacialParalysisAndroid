@@ -20,7 +20,7 @@ public class SelectPage extends AppCompatActivity {
 
     private String username;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private int formID;
+    private long formID;
     private boolean photosDone = false;
     private boolean questionsDone = false;
     private DatabaseReference basePath;
@@ -32,7 +32,7 @@ public class SelectPage extends AppCompatActivity {
         setContentView(R.layout.select_page);
 
         username = getIntent().getStringExtra("USERNAME");
-        formID = getIntent().getIntExtra("FORMID", 0);
+        formID = getIntent().getLongExtra("FORMID", 0);
         questionsDone = getIntent().getBooleanExtra("QUESTIONSDONE", false);
         photosDone = getIntent().getBooleanExtra("PHOTOSDONE", false);
 
@@ -177,7 +177,7 @@ public class SelectPage extends AppCompatActivity {
     private void startPhotos()
     {
         Intent intent = new Intent(this, CameraActivity.class);
-        intent.putExtra("FORMID", Integer.toString(formID)); //so the question activity knows where to send the formID to.
+        intent.putExtra("FORMID", formID); //so the question activity knows where to send the formID to.
         intent.putExtra("USERNAME", username);
         intent.putExtra("QUESTIONSDONE", questionsDone);
         startActivity(intent);
@@ -187,7 +187,7 @@ public class SelectPage extends AppCompatActivity {
     private void startQuestions()
     {
         Intent intent = new Intent(this, NewFormActivity.class); //go to Next activity
-        intent.putExtra("FORMID", Integer.toString(formID)); //so the question activity knows where to send the formID to.
+        intent.putExtra("FORMID", formID); //so the question activity knows where to send the formID to.
         intent.putExtra("USERNAME", username);
         intent.putExtra("PHOTOSDONE", photosDone);
         startActivity(intent);

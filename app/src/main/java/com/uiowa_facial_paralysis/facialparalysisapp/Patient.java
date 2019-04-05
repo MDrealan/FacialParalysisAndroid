@@ -30,7 +30,7 @@ public class Patient
         this.email = email;
         this.hashed_password = hashed_password;
         this.current_form = current_form;
-        this.patientID = username; //TODO:: auto-increment?
+        this.patientID = username;
     }
 
     public int getCurrent_form() {

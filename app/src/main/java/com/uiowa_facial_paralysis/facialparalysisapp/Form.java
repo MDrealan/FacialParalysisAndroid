@@ -40,9 +40,9 @@ public class Form
    // private ArrayList<String> userAnswers;
     //private String[] userAnswers;
 
-    public final int patientID;
+    public final String patientID;
 
-    public Form(String name,String formType, String username, final int patientID)
+    public Form(String name,String formType, String username, final String patientID)
     {
         this.formID = new Date().getTime();
         this.id = formID;
@@ -105,7 +105,7 @@ public class Form
         return id;
     }
 
-    public int getPatientID() {
+    public String getPatientID() {
         return patientID;
     }
 

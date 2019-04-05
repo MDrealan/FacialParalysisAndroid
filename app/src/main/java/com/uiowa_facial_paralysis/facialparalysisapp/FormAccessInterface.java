@@ -23,7 +23,7 @@ public interface FormAccessInterface
     Form getFormViaID(final long formID);
 
     @Query("SELECT * FROM form WHERE patientID=:patientID")
-    List<Form> getPatientForms(final int patientID);
+    List<Form> getPatientForms(final String patientID);
 
     @Query("SELECT * FROM form WHERE patientID=:patientID AND isNewForm=:isNewForm")
     List<Form> getPatientNewForms(final int patientID, final boolean isNewForm);
