@@ -79,11 +79,14 @@ public class SelectPage extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                saveCurrentState(); //check whether form is done (move to finalized forms) or if
+                //note that all saving is done within the questionaiire activity and the photo activity.
+                //no form has to be moved to completed here.
                 goHome();
             }
         });
-        if(questionsDone && photosDone) // && photosDone
+
+        //OLD: FIREBASE
+        if(questionsDone && photosDone)
         {
             String completedStringPath = "forms/finalized/" + username + "/" + formID + "/";
             DatabaseReference completedPath = database.getReference(completedStringPath);
@@ -91,20 +94,6 @@ public class SelectPage extends AppCompatActivity {
             removeIDFromOngoing();
         }
 
-    }
-
-    private void saveCurrentState()
-    {
-        //if done with form, move it to finalized in the database.
-        //Todo:: implement photosDone.
-        if(questionsDone)
-        {
-           // moveFormToCompleted(basePath, completedPath);
-        }
-        else //not done with form, just exit. the questionairre and photo activities handle sending info to DB.
-        {
-
-        }
     }
 
     private void removeIDFromOngoing()

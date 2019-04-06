@@ -10,12 +10,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -23,7 +35,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomePage extends AppCompatActivity {
 
@@ -93,12 +107,56 @@ public class HomePage extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                exportNewForms(export_forms);
+              //  exportNewForms(export_forms);
+                exportNewFormsViaPOSTRequest(export_forms);
             }
         });
 
         //get all form ID's
         getOngoingForms();
+
+        exportNewFormsViaPOSTRequest(export_forms);
+    }
+
+    private void exportNewFormsViaPOSTRequest(Button button)
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        try {
+            String URL = "https://paralysisapp.herokuapp.com/recordapi/add/createviaweb";
+            JSONObject jsonBody = new JSONObject();
+
+            jsonBody.put("email", "abc@abc.com");
+            jsonBody.put("password", "");
+            jsonBody.put("user_type", "");
+            jsonBody.put("company_id", "");
+            jsonBody.put("status", "");
+
+            JsonObjectRequest jsonOblect = new JsonObjectRequest(Request.Method.POST, URL, jsonBody, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                    Toast.makeText(getApplicationContext(), "Response:  " + response.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                   // onBackPressed();
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    final Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Basic " + "c2FnYXJAa2FydHBheS5jb206cnMwM2UxQUp5RnQzNkQ5NDBxbjNmUDgzNVE3STAyNzI=");//put your token here
+                    return headers;
+                }
+            };
+         //   VolleyApplication.getInstance().addToRequestQueue(jsonOblect);
+            requestQueue.add(jsonOblect);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void exportNewForms(Button button)
@@ -114,12 +172,15 @@ public class HomePage extends AppCompatActivity {
             {
                 FileWriter writer = new FileWriter(fileToWriteTo);
 
-                writer.write(currPatient.getUsername() + '\n'); //patient name first.
+              //  writer.write(currPatient.getUsername() + '\n'); //patient name first.
 
                 for (int i = 0; i < newPatientForms.size(); i++)
                 {
-                    String formToWrite = newPatientForms.get(i).toString();
-                    writer.write(formToWrite + '\n');
+                    if(newPatientForms.get(i).isComplete()) //make sure form is compelte.
+                    {
+                        String formToWrite = newPatientForms.get(i).toString();
+                        writer.write(formToWrite + '\n');
+                    }
                 }
                 writer.flush();
                 writer.close();

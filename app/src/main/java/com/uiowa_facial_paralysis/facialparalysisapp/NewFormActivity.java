@@ -246,16 +246,12 @@ public class NewFormActivity extends AppCompatActivity {
         userAnswerArray = userAnswers.toArray(userAnswerArray);
         //newForm.setUserAnswers(userAnswerArray);
         newForm.setQuestionDone(true);
-        if(newForm.isPhotoDone()) //if photo is done as well, then form is complete. Todo:: can route to home page if so.
-        {
-            newForm.setComplete(true);
-        }
 
         StringBuilder user_answer_sb = new StringBuilder();
         for (int i = 0; i < userAnswers.size(); i++)
         {
             user_answer_sb.append(userAnswers.get(i).toString());
-            user_answer_sb.append(" , ");
+            user_answer_sb.append(" # ");
         }
         newForm.setUserAnswers(user_answer_sb.toString());
 
