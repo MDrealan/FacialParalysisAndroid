@@ -1,12 +1,21 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -14,7 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SelectPage extends AppCompatActivity {
 
@@ -24,6 +38,11 @@ public class SelectPage extends AppCompatActivity {
     private boolean photosDone = false;
     private boolean questionsDone = false;
     private DatabaseReference basePath;
+
+    private PatientDatabase patientDB;
+    private FormDatabase formDB;
+
+    private Form formToSend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,6 +54,15 @@ public class SelectPage extends AppCompatActivity {
         formID = getIntent().getLongExtra("FORMID", 0);
         questionsDone = getIntent().getBooleanExtra("QUESTIONSDONE", false);
         photosDone = getIntent().getBooleanExtra("PHOTOSDONE", false);
+
+        patientDB = Room.databaseBuilder(getApplicationContext(), PatientDatabase.class, "patient_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+        formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
+
+        //ready to save & exit (the only command they can now do)
+        if(photosDone && questionsDone)
+        {
+            formToSend = formDB.getFormAccessInterface().getFormViaID(formID);
+        }
 
         String questionPath = "forms/ongoing/" + username + "/" + formID + "/";
         basePath = database.getReference(questionPath);
@@ -81,6 +109,8 @@ public class SelectPage extends AppCompatActivity {
             {
                 //note that all saving is done within the questionaiire activity and the photo activity.
                 //no form has to be moved to completed here.
+                //however, we will automatically send the completed form to the rails app here:
+                exportNewFormsViaPOSTRequest();
                 goHome();
             }
         });
@@ -94,6 +124,51 @@ public class SelectPage extends AppCompatActivity {
             removeIDFromOngoing();
         }
 
+    }
+
+    private void exportNewFormsViaPOSTRequest()
+    {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        try {
+            String URL = "https://paralysisapp.herokuapp.com/recordapi/add/createviaweb";
+            JSONObject jsonBody = new JSONObject();
+
+            jsonBody.put("username", formToSend.getPatientID());
+            jsonBody.put("form_date", formToSend.getFormDate());
+            jsonBody.put("form_questions", formToSend.getFormQuestions());
+            jsonBody.put("form_answers", formToSend.getUserAnswers());
+            jsonBody.put("total_score", "100");
+            jsonBody.put("individual_scores", "");
+            jsonBody.put("form_type", "FACE");
+
+
+            JsonObjectRequest jsonOblect = new JsonObjectRequest(Request.Method.POST, URL, jsonBody, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                    Toast.makeText(getApplicationContext(), "Response:  " + response.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    // onBackPressed();
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    final Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Basic " + "c2FnYXJAa2FydHBheS5jb206cnMwM2UxQUp5RnQzNkQ5NDBxbjNmUDgzNVE3STAyNzI=");//put your token here
+                    return headers;
+                }
+            };
+            //   VolleyApplication.getInstance().addToRequestQueue(jsonOblect);
+            requestQueue.add(jsonOblect);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void removeIDFromOngoing()

@@ -6,6 +6,7 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -23,6 +24,7 @@ public class Form
     private String formType;
     private String userAnswers;
     private String username;
+    private String formQuestions;
 
     private boolean isComplete = false;
     private boolean isQuestionDone = false;
@@ -36,6 +38,10 @@ public class Form
     //private ArrayList<byte[]> images;
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     private byte[] image;
+
+    public static String pattern = "yyyy-MM-dd";
+    public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+    private String formDate;
 
    // private ArrayList<String> userAnswers;
     //private String[] userAnswers;
@@ -52,6 +58,7 @@ public class Form
         this.formType = formType;
         this.patientID = patientID;
         this.faceScore = 0;
+        this.formDate = simpleDateFormat.format(new Date());
         image = "aslkdhjg".getBytes(); //just testing to see if it works on form creation (will be overwritten anyway)
     }
 
@@ -161,7 +168,23 @@ public class Form
         return isNewForm;
     }
 
+    public String getFormDate() {
+        return formDate;
+    }
+
+    public void setFormDate(String formDate) {
+        this.formDate = formDate;
+    }
+
     public void setNewForm(boolean newForm) {
         isNewForm = newForm;
+    }
+
+    public String getFormQuestions() {
+        return formQuestions;
+    }
+
+    public void setFormQuestions(String formQuestions) {
+        this.formQuestions = formQuestions;
     }
 }

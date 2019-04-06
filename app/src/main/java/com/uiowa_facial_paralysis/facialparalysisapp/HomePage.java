@@ -108,56 +108,14 @@ public class HomePage extends AppCompatActivity {
             public void onClick(View v)
             {
               //  exportNewForms(export_forms);
-                exportNewFormsViaPOSTRequest(export_forms);
+             //   exportNewFormsViaPOSTRequest(export_forms);
             }
         });
 
         //get all form ID's
         getOngoingForms();
-
-        exportNewFormsViaPOSTRequest(export_forms);
     }
 
-    private void exportNewFormsViaPOSTRequest(Button button)
-    {
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        try {
-            String URL = "https://paralysisapp.herokuapp.com/recordapi/add/createviaweb";
-            JSONObject jsonBody = new JSONObject();
-
-            jsonBody.put("email", "abc@abc.com");
-            jsonBody.put("password", "");
-            jsonBody.put("user_type", "");
-            jsonBody.put("company_id", "");
-            jsonBody.put("status", "");
-
-            JsonObjectRequest jsonOblect = new JsonObjectRequest(Request.Method.POST, URL, jsonBody, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-
-                    Toast.makeText(getApplicationContext(), "Response:  " + response.toString(), Toast.LENGTH_SHORT).show();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                   // onBackPressed();
-
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    final Map<String, String> headers = new HashMap<>();
-                    headers.put("Authorization", "Basic " + "c2FnYXJAa2FydHBheS5jb206cnMwM2UxQUp5RnQzNkQ5NDBxbjNmUDgzNVE3STAyNzI=");//put your token here
-                    return headers;
-                }
-            };
-         //   VolleyApplication.getInstance().addToRequestQueue(jsonOblect);
-            requestQueue.add(jsonOblect);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void exportNewForms(Button button)
     {

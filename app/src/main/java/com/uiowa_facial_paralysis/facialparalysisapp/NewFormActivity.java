@@ -248,12 +248,17 @@ public class NewFormActivity extends AppCompatActivity {
         newForm.setQuestionDone(true);
 
         StringBuilder user_answer_sb = new StringBuilder();
+        StringBuilder user_question_sb = new StringBuilder();
         for (int i = 0; i < userAnswers.size(); i++)
         {
             user_answer_sb.append(userAnswers.get(i).toString());
             user_answer_sb.append(" # ");
+
+            user_question_sb.append(databaseQuestions.get(i).toString());
+            user_question_sb.append(" # ");
         }
         newForm.setUserAnswers(user_answer_sb.toString());
+        newForm.setFormQuestions(user_question_sb.toString());
 
         //check if photos are done, if so (the else pathway) then just transfer form info.
         if(!photosDone) {
