@@ -120,14 +120,6 @@ public class NewFormActivity extends AppCompatActivity {
             }
         });
 
-        //in reality, this should be wrapped around the function that actually stores data (not good practice technically).
-        int check = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (check == PackageManager.PERMISSION_GRANTED) {
-            //Do something
-        } else {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1024);
-        }
-
     }
     //Todo:: Modify database so that we have multiple questionairre forms (currently formdata path is just one questionaiire. woopsies :)
     private void getDatabaseInfo()
@@ -269,6 +261,7 @@ public class NewFormActivity extends AppCompatActivity {
         {
             //formToUpdate = formDB.getFormAccessInterface().getFormViaID(formID);
             formToUpdate.setUserAnswers(user_answer_sb.toString());
+            formToUpdate.setFormQuestions(user_question_sb.toString());
             formToUpdate.setComplete(true);
             formToUpdate.setQuestionDone(true);
             formDB.getFormAccessInterface().update(formToUpdate);

@@ -185,10 +185,10 @@ public class CameraActivity extends AppCompatActivity {
         //Bitmap bmp = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 90, stream);
         byte[] byteArray = stream.toByteArray();
         newForm.setImage(byteArray);
-        bmp.recycle();
+     //   bmp.recycle();
 
         //add image to form (only one supported currently)
         //doesn't save it to the database. that's done later.

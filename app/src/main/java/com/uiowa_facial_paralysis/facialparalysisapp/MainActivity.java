@@ -1,8 +1,11 @@
 package com.uiowa_facial_paralysis.facialparalysisapp;
 
+import android.Manifest;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -65,6 +68,15 @@ private PatientDatabase patientDB;
                 goToSignUp();
             }
         });
+
+        //in reality, this should be wrapped around the function that actually stores data (not good practice technically).
+        int check = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (check == PackageManager.PERMISSION_GRANTED) {
+            //Do something
+        } else {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1024);
+        }
+
 
 
     }
