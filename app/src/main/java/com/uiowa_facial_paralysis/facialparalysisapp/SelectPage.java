@@ -138,8 +138,8 @@ public class SelectPage extends AppCompatActivity {
             jsonBody.put("form_date", formToSend.getFormDate());
             jsonBody.put("form_questions", formToSend.getFormQuestions());
             jsonBody.put("form_answers", formToSend.getUserAnswers());
-            jsonBody.put("total_score", "100");
-            jsonBody.put("individual_scores", "");
+            jsonBody.put("total_score", 100);
+           // jsonBody.put("individual_scores", [13,25,356]);
             jsonBody.put("form_type", "FACE");
 
 

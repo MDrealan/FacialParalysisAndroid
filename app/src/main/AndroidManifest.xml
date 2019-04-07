@@ -32,6 +32,8 @@
         <activity android:name=".SelectPage" />
         <activity android:name=".ContinueForm"></activity>
         <activity android:name=".CameraActivity"></activity>
+
     </application>
+
 
 </manifest>

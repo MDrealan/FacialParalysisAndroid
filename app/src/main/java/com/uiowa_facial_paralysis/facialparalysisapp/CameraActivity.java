@@ -5,12 +5,14 @@ import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Camera;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
@@ -52,12 +54,16 @@ public class CameraActivity extends AppCompatActivity {
     private FormDatabase formDB;
     private Form newForm;
     private Patient currPatient;
+    private String pictureImagePath = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
 
         //get the variables from the previous activity.
         username = getIntent().getStringExtra("USERNAME");
@@ -69,6 +75,7 @@ public class CameraActivity extends AppCompatActivity {
         formDB = Room.databaseBuilder(getApplicationContext(), FormDatabase.class, "form_db").allowMainThreadQueries().build(); //allow main thread queries issue may lock UI while querying DB.
         currPatient = patientDB.patientAccessInterface().getPatientViaUserName(username);
 
+
         //set up a new form to add pictures to.
         newForm = new Form("not_implemented", "FACE", currPatient.getUsername(), username);
 
@@ -76,35 +83,36 @@ public class CameraActivity extends AppCompatActivity {
         new_Fphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+                openBackCamera();
+                //dispatchTakePictureIntent();
             }
         });
         Button new_Lphoto = (Button)findViewById(R.id.left_button);
         new_Lphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+               // dispatchTakePictureIntent();
             }
         });
         Button new_Rphoto = (Button)findViewById(R.id.right_button);
         new_Rphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+              //  dispatchTakePictureIntent();
             }
         });
         Button new_Pphoto = (Button)findViewById(R.id.pucker_button);
         new_Pphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+              //  dispatchTakePictureIntent();
             }
         });
         Button new_FFphoto = (Button)findViewById(R.id.frontface_button);
         new_FFphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+              //  dispatchTakePictureIntent();
             }
         });
         /*Button new_video = (Button)findViewById(R.id.video_button);
@@ -168,20 +176,22 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
        // if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-            Bundle extras = data.getExtras();
+//            Bundle extras = data.getExtras();
       //      Log.e("URI",imageUri.toString());
          //   Bitmap imageBitmap = (Bitmap) extras.get("data");
           //  mView.setImageBitmap(imageBitmap);
-
-        Bitmap bmp = (Bitmap) data.getExtras().get("data");
+        File imgFile = new  File(pictureImagePath);
+        Bitmap bmp = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        //Bitmap bmp = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
+        newForm.setImage(byteArray);
         bmp.recycle();
 
         //add image to form (only one supported currently)
-        //doesn't save it to the database. this needs to be done later.
-        newForm.setImage(byteArray);
+        //doesn't save it to the database. that's done later.
 
     //    }
 
@@ -212,22 +222,36 @@ public class CameraActivity extends AppCompatActivity {
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
-          //  File photoFile = null;
-          //  try {
-          //      photoFile = createImageFile();
-         //   } catch (IOException ex) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
                 // Error occurred while creating the File
-
             }
             // Continue only if the File was successfully created
-         //   if (photoFile != null) {
-            //    Uri photoURI = FileProvider.getUriForFile(this,
-             //           "com.example.android.fileprovider",
-                //        photoFile);
-                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-         //   }
-       // }
+            //   if (photoFile != null) {
+            Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), getPackageName()+".fileprovider", photoFile);
+            //Uri photoURI = FileProvider.getUriForFile(this,
+            //        "com.example.android.fileprovider",
+           //         photoFile);
+          //  Uri photoURI = Uri.fromFile(photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            //   }
+            // }
+        }
+    }
+    private void openBackCamera() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = timeStamp + ".jpg";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        pictureImagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
+        File file = new File(pictureImagePath);
+        Uri outputFileUri = Uri.fromFile(file);
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+        startActivityForResult(cameraIntent, 1);
     }
 
     private void goToVideo()
