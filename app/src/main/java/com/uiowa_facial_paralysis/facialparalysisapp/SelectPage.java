@@ -26,9 +26,12 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class SelectPage extends AppCompatActivity {
 
@@ -139,7 +142,19 @@ public class SelectPage extends AppCompatActivity {
             jsonBody.put("form_questions", formToSend.getFormQuestions());
             jsonBody.put("form_answers", formToSend.getUserAnswers());
             jsonBody.put("total_score", 100);
-           // jsonBody.put("individual_scores", [13,25,356]);
+            byte[] imageBase64Encoded = android.util.Base64.encode(formToSend.getImage(), android.util.Base64.DEFAULT);
+            String imageAsString = " ";
+            //convert to string
+            try
+            {
+                imageAsString = new String(imageBase64Encoded, "UTF-8");
+            }
+            catch(UnsupportedEncodingException s)
+            {
+
+            }
+
+            jsonBody.put("imagetest", imageAsString); //testing for sending the images.
             jsonBody.put("form_type", "FACE");
 
 

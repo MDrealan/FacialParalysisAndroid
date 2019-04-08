@@ -174,7 +174,8 @@ public class CameraActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
        // if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
 //            Bundle extras = data.getExtras();
       //      Log.e("URI",imageUri.toString());
@@ -188,7 +189,7 @@ public class CameraActivity extends AppCompatActivity {
         bmp.compress(Bitmap.CompressFormat.JPEG, 90, stream);
         byte[] byteArray = stream.toByteArray();
         newForm.setImage(byteArray);
-     //   bmp.recycle();
+        bmp.recycle();
 
         //add image to form (only one supported currently)
         //doesn't save it to the database. that's done later.
@@ -249,7 +250,7 @@ public class CameraActivity extends AppCompatActivity {
         pictureImagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
         File file = new File(pictureImagePath);
         Uri outputFileUri = Uri.fromFile(file);
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
         startActivityForResult(cameraIntent, 1);
     }
