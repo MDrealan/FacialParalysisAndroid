@@ -142,21 +142,29 @@ public class SelectPage extends AppCompatActivity {
             jsonBody.put("form_questions", formToSend.getFormQuestions());
             jsonBody.put("form_answers", formToSend.getUserAnswers());
             jsonBody.put("total_score", 100);
-            byte[] imageBase64Encoded = android.util.Base64.encode(formToSend.getImage(), android.util.Base64.DEFAULT);
-            String imageAsString = " ";
-            //convert to string
+            jsonBody.put("form_type", "FACE");
+
+            String image1AsString = " ";
+            String image2AsString = " ";
+            String image3AsString = " ";
+
+            //All images are base 64 encoded byte[] (this is done in camera activity to reduce computation time here.). convert all to string.
             try
             {
-                imageAsString = new String(imageBase64Encoded, "UTF-8");
+                image1AsString = new String(formToSend.getImage1(), "UTF-8");
+                image2AsString = new String(formToSend.getImage2(), "UTF-8");
+                image3AsString = new String(formToSend.getImage3(), "UTF-8");
             }
             catch(UnsupportedEncodingException s)
             {
-
+                image1AsString = " ";
+                image2AsString = " ";
+                image3AsString = " ";
             }
-
-            jsonBody.put("imagetest", imageAsString); //testing for sending the images.
-            jsonBody.put("form_type", "FACE");
-
+            //append images to JSON.
+            jsonBody.put("image1", image1AsString);
+            jsonBody.put("image2", image2AsString);
+            jsonBody.put("image3", image3AsString);
 
             JsonObjectRequest jsonOblect = new JsonObjectRequest(Request.Method.POST, URL, jsonBody, new Response.Listener<JSONObject>() {
                 @Override

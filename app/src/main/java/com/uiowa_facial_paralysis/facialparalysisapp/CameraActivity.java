@@ -56,6 +56,8 @@ public class CameraActivity extends AppCompatActivity {
     private Patient currPatient;
     private String pictureImagePath = "";
 
+    private int currPhoto = 1;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -91,14 +93,14 @@ public class CameraActivity extends AppCompatActivity {
         new_Lphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // dispatchTakePictureIntent();
+            openBackCamera();
             }
         });
         Button new_Rphoto = (Button)findViewById(R.id.right_button);
         new_Rphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  dispatchTakePictureIntent();
+              openBackCamera();
             }
         });
         Button new_Pphoto = (Button)findViewById(R.id.pucker_button);
@@ -147,7 +149,9 @@ public class CameraActivity extends AppCompatActivity {
         if(questionsDone)
         {
             Form formToUpdate = formDB.getFormAccessInterface().getFormViaID(formID);
-            formToUpdate.setImage(newForm.getImage());
+            formToUpdate.setImage1(newForm.getImage1());
+            formToUpdate.setImage2(newForm.getImage2());
+            formToUpdate.setImage3(newForm.getImage3());
             formToUpdate.setComplete(true);
             formToUpdate.setPhotoDone(true);
             formDB.getFormAccessInterface().update(formToUpdate);
@@ -190,17 +194,32 @@ public class CameraActivity extends AppCompatActivity {
         resized.compress(Bitmap.CompressFormat.JPEG, 90, stream);
 
         byte[] byteArray = stream.toByteArray();
-        newForm.setImage(byteArray);
+        setCurrentFormImage(byteArray);
+        currPhoto++;
         bmp.recycle();
-
-        //add image to form (only one supported currently)
         //doesn't save it to the database. that's done later.
 
     //    }
 
     }
 
+    //really bad design, but issues with storing arraylists in Room DB led to this.
+    private void setCurrentFormImage(byte[] image)
+    {
+        byte[] imageBase64Encoded = android.util.Base64.encode(image, android.util.Base64.DEFAULT);
+        if( currPhoto == 1) {
+            newForm.setImage1(imageBase64Encoded);
+        }
+        else if (currPhoto == 2)
+        {
+            newForm.setImage2(imageBase64Encoded);
+        }
+        else
+        {
+            newForm.setImage3(imageBase64Encoded);
+        }
 
+    }
 
 
     private File createImageFile() throws IOException {

@@ -36,8 +36,18 @@ public class Form
 
    // @TypeConverters(ImageConverter.class)
     //private ArrayList<byte[]> images;
+    //This is such poor programming it hurts.
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
-    private byte[] image;
+    private byte[] image1;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] image2;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] image3;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] image4;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] image5;
+
 
     public static String pattern = "yyyy-MM-dd";
     public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -59,7 +69,6 @@ public class Form
         this.patientID = patientID;
         this.faceScore = 0;
         this.formDate = simpleDateFormat.format(new Date());
-        image = "aslkdhjg".getBytes(); //just testing to see if it works on form creation (will be overwritten anyway)
     }
 
 
@@ -76,12 +85,12 @@ public class Form
         return curr_name + " , " + formType + " , " + formScore + " , " + formAnswers;
     }
 
-    public byte[] getImage() {
-        return image;
+    public byte[] getImage1() {
+        return image1;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImage1(byte[] image) {
+        this.image1 = image;
     }
 
     public long getFormID() {
@@ -186,5 +195,37 @@ public class Form
 
     public void setFormQuestions(String formQuestions) {
         this.formQuestions = formQuestions;
+    }
+
+    public byte[] getImage2() {
+        return image2;
+    }
+
+    public void setImage2(byte[] image2) {
+        this.image2 = image2;
+    }
+
+    public byte[] getImage3() {
+        return image3;
+    }
+
+    public void setImage3(byte[] image3) {
+        this.image3 = image3;
+    }
+
+    public byte[] getImage4() {
+        return image4;
+    }
+
+    public void setImage4(byte[] image4) {
+        this.image4 = image4;
+    }
+
+    public byte[] getImage5() {
+        return image5;
+    }
+
+    public void setImage5(byte[] image5) {
+        this.image5 = image5;
     }
 }
