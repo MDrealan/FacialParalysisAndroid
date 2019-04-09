@@ -186,7 +186,9 @@ public class CameraActivity extends AppCompatActivity {
         //Bitmap bmp = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        bmp.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+        Bitmap resized = Bitmap.createScaledBitmap(bmp, 500, 400, true);
+        resized.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+
         byte[] byteArray = stream.toByteArray();
         newForm.setImage(byteArray);
         bmp.recycle();
